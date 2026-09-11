@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#14120f">
+  <title>{% block title %}rdspan{% endblock %}</title>
+  <link rel="stylesheet" href="/static/css/app.css">
+  <script src="/static/js/htmx.min.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#main">Saltar al contenido</a>
+  <header class="top">
+    <a class="brand" href="/">rdspan</a>
+    <p class="tag">Ranieri–Dowling · español</p>
+  </header>
+  <main id="main">
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

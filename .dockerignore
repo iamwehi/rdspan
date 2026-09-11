@@ -1,0 +1,15 @@
+.venv
+.git
+.pytest_cache
+__pycache__
+*.pyc
+*.db
+*.db-wal
+*.db-shm
+var
+.env
+.coverage
+htmlcov
+*.egg-info
+.ruff_cache
+.DS_Store

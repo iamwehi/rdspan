@@ -1,0 +1,522 @@
+[
+  {
+    "id": "hablar.presente.indicativo",
+    "lemma": "hablar",
+    "ending": "ar",
+    "regularity": "regular",
+    "tense": "presente",
+    "mood": "indicativo",
+    "source": "Real Academia Española conjugación estándar (hechos gramaticales públicos); tablas curadas en el repositorio rdspan.",
+    "license": "CC0-1.0",
+    "verified_at": "2026-09-11",
+    "sort_order": 10,
+    "cells": [
+      {"slot": "1s", "pronoun": "yo", "form": "hablo"},
+      {"slot": "2s", "pronoun": "tú", "form": "hablas"},
+      {"slot": "3s", "pronoun": "él", "form": "habla"},
+      {"slot": "1p", "pronoun": "nosotros", "form": "hablamos"},
+      {"slot": "2p", "pronoun": "vosotros", "form": "habláis"},
+      {"slot": "3p", "pronoun": "ellos", "form": "hablan"}
+    ]
+  },
+  {
+    "id": "hablar.preterito.indicativo",
+    "lemma": "hablar",
+    "ending": "ar",
+    "regularity": "regular",
+    "tense": "pretérito",
+    "mood": "indicativo",
+    "source": "Real Academia Española conjugación estándar (hechos gramaticales públicos); tablas curadas en el repositorio rdspan.",
+    "license": "CC0-1.0",
+    "verified_at": "2026-09-11",
+    "sort_order": 11,
+    "cells": [
+      {"slot": "1s", "pronoun": "yo", "form": "hablé"},
+      {"slot": "2s", "pronoun": "tú", "form": "hablaste"},
+      {"slot": "3s", "pronoun": "él", "form": "habló"},
+      {"slot": "1p", "pronoun": "nosotros", "form": "hablamos"},
+      {"slot": "2p", "pronoun": "vosotros", "form": "hablasteis"},
+      {"slot": "3p", "pronoun": "ellos", "form": "hablaron"}
+    ]
+  },
+  {
+    "id": "comer.presente.indicativo",
+    "lemma": "comer",
+    "ending": "er",
+    "regularity": "regular",
+    "tense": "presente",
+    "mood": "indicativo",
+    "source": "Real Academia Española conjugación estándar (hechos gramaticales públicos); tablas curadas en el repositorio rdspan.",
+    "license": "CC0-1.0",
+    "verified_at": "2026-09-11",
+    "sort_order": 20,
+    "cells": [
+      {"slot": "1s", "pronoun": "yo", "form": "como"},
+      {"slot": "2s", "pronoun": "tú", "form": "comes"},
+      {"slot": "3s", "pronoun": "él", "form": "come"},
+      {"slot": "1p", "pronoun": "nosotros", "form": "comemos"},
+      {"slot": "2p", "pronoun": "vosotros", "form": "coméis"},
+      {"slot": "3p", "pronoun": "ellos", "form": "comen"}
+    ]
+  },
+  {
+    "id": "comer.preterito.indicativo",
+    "lemma": "comer",
+    "ending": "er",
+    "regularity": "regular",
+    "tense": "pretérito",
+    "mood": "indicativo",
+    "source": "Real Academia Española conjugación estándar (hechos gramaticales públicos); tablas curadas en el repositorio rdspan.",
+    "license": "CC0-1.0",
+    "verified_at": "2026-09-11",
+    "sort_order": 21,
+    "cells": [
+      {"slot": "1s", "pronoun": "yo", "form": "comí"},
+      {"slot": "2s", "pronoun": "tú", "form": "comiste"},
+      {"slot": "3s", "pronoun": "él", "form": "comió"},
+      {"slot": "1p", "pronoun": "nosotros", "form": "comimos"},
+      {"slot": "2p", "pronoun": "vosotros", "form": "comisteis"},
+      {"slot": "3p", "pronoun": "ellos", "form": "comieron"}
+    ]
+  },
+  {
+    "id": "vivir.presente.indicativo",
+    "lemma": "vivir",
+    "ending": "ir",
+    "regularity": "regular",
+    "tense": "presente",
+    "mood": "indicativo",
+    "source": "Real Academia Española conjugación estándar (hechos gramaticales públicos); tablas curadas en el repositorio rdspan.",
+    "license": "CC0-1.0",
+    "verified_at": "2026-09-11",
+    "sort_order": 30,
+    "cells": [
+      {"slot": "1s", "pronoun": "yo", "form": "vivo"},
+      {"slot": "2s", "pronoun": "tú", "form": "vives"},
+      {"slot": "3s", "pronoun": "él", "form": "vive"},
+      {"slot": "1p", "pronoun": "nosotros", "form": "vivimos"},
+      {"slot": "2p", "pronoun": "vosotros", "form": "vivís"},
+      {"slot": "3p", "pronoun": "ellos", "form": "viven"}
+    ]
+  },
+  {
+    "id": "vivir.preterito.indicativo",
+    "lemma": "vivir",
+    "ending": "ir",
+    "regularity": "regular",
+    "tense": "pretérito",
+    "mood": "indicativo",
+    "source": "Real Academia Española conjugación estándar (hechos gramaticales públicos); tablas curadas en el repositorio rdspan.",
+    "license": "CC0-1.0",
+    "verified_at": "2026-09-11",
+    "sort_order": 31,
+    "cells": [
+      {"slot": "1s", "pronoun": "yo", "form": "viví"},
+      {"slot": "2s", "pronoun": "tú", "form": "viviste"},
+      {"slot": "3s", "pronoun": "él", "form": "vivió"},
+      {"slot": "1p", "pronoun": "nosotros", "form": "vivimos"},
+      {"slot": "2p", "pronoun": "vosotros", "form": "vivisteis"},
+      {"slot": "3p", "pronoun": "ellos", "form": "vivieron"}
+    ]
+  },
+  {
+    "id": "ser.presente.indicativo",
+    "lemma": "ser",
+    "ending": null,
+    "regularity": "irregular",
+    "tense": "presente",
+    "mood": "indicativo",
+    "source": "Real Academia Española conjugación estándar (hechos gramaticales públicos); tablas curadas en el repositorio rdspan.",
+    "license": "CC0-1.0",
+    "verified_at": "2026-09-11",
+    "sort_order": 40,
+    "cells": [
+      {"slot": "1s", "pronoun": "yo", "form": "soy"},
+      {"slot": "2s", "pronoun": "tú", "form": "eres"},
+      {"slot": "3s", "pronoun": "él", "form": "es"},
+      {"slot": "1p", "pronoun": "nosotros", "form": "somos"},
+      {"slot": "2p", "pronoun": "vosotros", "form": "sois"},
+      {"slot": "3p", "pronoun": "ellos", "form": "son"}
+    ]
+  },
+  {
+    "id": "ser.preterito.indicativo",
+    "lemma": "ser",
+    "ending": null,
+    "regularity": "irregular",
+    "tense": "pretérito",
+    "mood": "indicativo",
+    "source": "Real Academia Española conjugación estándar (hechos gramaticales públicos); tablas curadas en el repositorio rdspan.",
+    "license": "CC0-1.0",
+    "verified_at": "2026-09-11",
+    "sort_order": 41,
+    "cells": [
+      {"slot": "1s", "pronoun": "yo", "form": "fui"},
+      {"slot": "2s", "pronoun": "tú", "form": "fuiste"},
+      {"slot": "3s", "pronoun": "él", "form": "fue"},
+      {"slot": "1p", "pronoun": "nosotros", "form": "fuimos"},
+      {"slot": "2p", "pronoun": "vosotros", "form": "fuisteis"},
+      {"slot": "3p", "pronoun": "ellos", "form": "fueron"}
+    ]
+  },
+  {
+    "id": "estar.presente.indicativo",
+    "lemma": "estar",
+    "ending": null,
+    "regularity": "irregular",
+    "tense": "presente",
+    "mood": "indicativo",
+    "source": "Real Academia Española conjugación estándar (hechos gramaticales públicos); tablas curadas en el repositorio rdspan.",
+    "license": "CC0-1.0",
+    "verified_at": "2026-09-11",
+    "sort_order": 50,
+    "cells": [
+      {"slot": "1s", "pronoun": "yo", "form": "estoy"},
+      {"slot": "2s", "pronoun": "tú", "form": "estás"},
+      {"slot": "3s", "pronoun": "él", "form": "está"},
+      {"slot": "1p", "pronoun": "nosotros", "form": "estamos"},
+      {"slot": "2p", "pronoun": "vosotros", "form": "estáis"},
+      {"slot": "3p", "pronoun": "ellos", "form": "están"}
+    ]
+  },
+  {
+    "id": "estar.preterito.indicativo",
+    "lemma": "estar",
+    "ending": null,
+    "regularity": "irregular",
+    "tense": "pretérito",
+    "mood": "indicativo",
+    "source": "Real Academia Española conjugación estándar (hechos gramaticales públicos); tablas curadas en el repositorio rdspan.",
+    "license": "CC0-1.0",
+    "verified_at": "2026-09-11",
+    "sort_order": 51,
+    "cells": [
+      {"slot": "1s", "pronoun": "yo", "form": "estuve"},
+      {"slot": "2s", "pronoun": "tú", "form": "estuviste"},
+      {"slot": "3s", "pronoun": "él", "form": "estuvo"},
+      {"slot": "1p", "pronoun": "nosotros", "form": "estuvimos"},
+      {"slot": "2p", "pronoun": "vosotros", "form": "estuvisteis"},
+      {"slot": "3p", "pronoun": "ellos", "form": "estuvieron"}
+    ]
+  },
+  {
+    "id": "ir.presente.indicativo",
+    "lemma": "ir",
+    "ending": null,
+    "regularity": "irregular",
+    "tense": "presente",
+    "mood": "indicativo",
+    "source": "Real Academia Española conjugación estándar (hechos gramaticales públicos); tablas curadas en el repositorio rdspan.",
+    "license": "CC0-1.0",
+    "verified_at": "2026-09-11",
+    "sort_order": 60,
+    "cells": [
+      {"slot": "1s", "pronoun": "yo", "form": "voy"},
+      {"slot": "2s", "pronoun": "tú", "form": "vas"},
+      {"slot": "3s", "pronoun": "él", "form": "va"},
+      {"slot": "1p", "pronoun": "nosotros", "form": "vamos"},
+      {"slot": "2p", "pronoun": "vosotros", "form": "vais"},
+      {"slot": "3p", "pronoun": "ellos", "form": "van"}
+    ]
+  },
+  {
+    "id": "ir.preterito.indicativo",
+    "lemma": "ir",
+    "ending": null,
+    "regularity": "irregular",
+    "tense": "pretérito",
+    "mood": "indicativo",
+    "source": "Real Academia Española conjugación estándar (hechos gramaticales públicos); tablas curadas en el repositorio rdspan.",
+    "license": "CC0-1.0",
+    "verified_at": "2026-09-11",
+    "sort_order": 61,
+    "cells": [
+      {"slot": "1s", "pronoun": "yo", "form": "fui"},
+      {"slot": "2s", "pronoun": "tú", "form": "fuiste"},
+      {"slot": "3s", "pronoun": "él", "form": "fue"},
+      {"slot": "1p", "pronoun": "nosotros", "form": "fuimos"},
+      {"slot": "2p", "pronoun": "vosotros", "form": "fuisteis"},
+      {"slot": "3p", "pronoun": "ellos", "form": "fueron"}
+    ]
+  },
+  {
+    "id": "haber.presente.indicativo",
+    "lemma": "haber",
+    "ending": null,
+    "regularity": "irregular",
+    "tense": "presente",
+    "mood": "indicativo",
+    "source": "Real Academia Española conjugación estándar (hechos gramaticales públicos); tablas curadas en el repositorio rdspan.",
+    "license": "CC0-1.0",
+    "verified_at": "2026-09-11",
+    "sort_order": 70,
+    "cells": [
+      {"slot": "1s", "pronoun": "yo", "form": "he"},
+      {"slot": "2s", "pronoun": "tú", "form": "has"},
+      {"slot": "3s", "pronoun": "él", "form": "ha"},
+      {"slot": "1p", "pronoun": "nosotros", "form": "hemos"},
+      {"slot": "2p", "pronoun": "vosotros", "form": "habéis"},
+      {"slot": "3p", "pronoun": "ellos", "form": "han"}
+    ]
+  },
+  {
+    "id": "haber.preterito.indicativo",
+    "lemma": "haber",
+    "ending": null,
+    "regularity": "irregular",
+    "tense": "pretérito",
+    "mood": "indicativo",
+    "source": "Real Academia Española conjugación estándar (hechos gramaticales públicos); tablas curadas en el repositorio rdspan.",
+    "license": "CC0-1.0",
+    "verified_at": "2026-09-11",
+    "sort_order": 71,
+    "cells": [
+      {"slot": "1s", "pronoun": "yo", "form": "hube"},
+      {"slot": "2s", "pronoun": "tú", "form": "hubiste"},
+      {"slot": "3s", "pronoun": "él", "form": "hubo"},
+      {"slot": "1p", "pronoun": "nosotros", "form": "hubimos"},
+      {"slot": "2p", "pronoun": "vosotros", "form": "hubisteis"},
+      {"slot": "3p", "pronoun": "ellos", "form": "hubieron"}
+    ]
+  },
+  {
+    "id": "tener.presente.indicativo",
+    "lemma": "tener",
+    "ending": null,
+    "regularity": "irregular",
+    "tense": "presente",
+    "mood": "indicativo",
+    "source": "Real Academia Española conjugación estándar (hechos gramaticales públicos); tablas curadas en el repositorio rdspan.",
+    "license": "CC0-1.0",
+    "verified_at": "2026-09-11",
+    "sort_order": 80,
+    "cells": [
+      {"slot": "1s", "pronoun": "yo", "form": "tengo"},
+      {"slot": "2s", "pronoun": "tú", "form": "tienes"},
+      {"slot": "3s", "pronoun": "él", "form": "tiene"},
+      {"slot": "1p", "pronoun": "nosotros", "form": "tenemos"},
+      {"slot": "2p", "pronoun": "vosotros", "form": "tenéis"},
+      {"slot": "3p", "pronoun": "ellos", "form": "tienen"}
+    ]
+  },
+  {
+    "id": "tener.preterito.indicativo",
+    "lemma": "tener",
+    "ending": null,
+    "regularity": "irregular",
+    "tense": "pretérito",
+    "mood": "indicativo",
+    "source": "Real Academia Española conjugación estándar (hechos gramaticales públicos); tablas curadas en el repositorio rdspan.",
+    "license": "CC0-1.0",
+    "verified_at": "2026-09-11",
+    "sort_order": 81,
+    "cells": [
+      {"slot": "1s", "pronoun": "yo", "form": "tuve"},
+      {"slot": "2s", "pronoun": "tú", "form": "tuviste"},
+      {"slot": "3s", "pronoun": "él", "form": "tuvo"},
+      {"slot": "1p", "pronoun": "nosotros", "form": "tuvimos"},
+      {"slot": "2p", "pronoun": "vosotros", "form": "tuvisteis"},
+      {"slot": "3p", "pronoun": "ellos", "form": "tuvieron"}
+    ]
+  },
+  {
+    "id": "hacer.presente.indicativo",
+    "lemma": "hacer",
+    "ending": null,
+    "regularity": "irregular",
+    "tense": "presente",
+    "mood": "indicativo",
+    "source": "Real Academia Española conjugación estándar (hechos gramaticales públicos); tablas curadas en el repositorio rdspan.",
+    "license": "CC0-1.0",
+    "verified_at": "2026-09-11",
+    "sort_order": 90,
+    "cells": [
+      {"slot": "1s", "pronoun": "yo", "form": "hago"},
+      {"slot": "2s", "pronoun": "tú", "form": "haces"},
+      {"slot": "3s", "pronoun": "él", "form": "hace"},
+      {"slot": "1p", "pronoun": "nosotros", "form": "hacemos"},
+      {"slot": "2p", "pronoun": "vosotros", "form": "hacéis"},
+      {"slot": "3p", "pronoun": "ellos", "form": "hacen"}
+    ]
+  },
+  {
+    "id": "hacer.preterito.indicativo",
+    "lemma": "hacer",
+    "ending": null,
+    "regularity": "irregular",
+    "tense": "pretérito",
+    "mood": "indicativo",
+    "source": "Real Academia Española conjugación estándar (hechos gramaticales públicos); tablas curadas en el repositorio rdspan.",
+    "license": "CC0-1.0",
+    "verified_at": "2026-09-11",
+    "sort_order": 91,
+    "cells": [
+      {"slot": "1s", "pronoun": "yo", "form": "hice"},
+      {"slot": "2s", "pronoun": "tú", "form": "hiciste"},
+      {"slot": "3s", "pronoun": "él", "form": "hizo"},
+      {"slot": "1p", "pronoun": "nosotros", "form": "hicimos"},
+      {"slot": "2p", "pronoun": "vosotros", "form": "hicisteis"},
+      {"slot": "3p", "pronoun": "ellos", "form": "hicieron"}
+    ]
+  },
+  {
+    "id": "decir.presente.indicativo",
+    "lemma": "decir",
+    "ending": null,
+    "regularity": "irregular",
+    "tense": "presente",
+    "mood": "indicativo",
+    "source": "Real Academia Española conjugación estándar (hechos gramaticales públicos); tablas curadas en el repositorio rdspan.",
+    "license": "CC0-1.0",
+    "verified_at": "2026-09-11",
+    "sort_order": 100,
+    "cells": [
+      {"slot": "1s", "pronoun": "yo", "form": "digo"},
+      {"slot": "2s", "pronoun": "tú", "form": "dices"},
+      {"slot": "3s", "pronoun": "él", "form": "dice"},
+      {"slot": "1p", "pronoun": "nosotros", "form": "decimos"},
+      {"slot": "2p", "pronoun": "vosotros", "form": "decís"},
+      {"slot": "3p", "pronoun": "ellos", "form": "dicen"}
+    ]
+  },
+  {
+    "id": "decir.preterito.indicativo",
+    "lemma": "decir",
+    "ending": null,
+    "regularity": "irregular",
+    "tense": "pretérito",
+    "mood": "indicativo",
+    "source": "Real Academia Española conjugación estándar (hechos gramaticales públicos); tablas curadas en el repositorio rdspan.",
+    "license": "CC0-1.0",
+    "verified_at": "2026-09-11",
+    "sort_order": 101,
+    "cells": [
+      {"slot": "1s", "pronoun": "yo", "form": "dije"},
+      {"slot": "2s", "pronoun": "tú", "form": "dijiste"},
+      {"slot": "3s", "pronoun": "él", "form": "dijo"},
+      {"slot": "1p", "pronoun": "nosotros", "form": "dijimos"},
+      {"slot": "2p", "pronoun": "vosotros", "form": "dijisteis"},
+      {"slot": "3p", "pronoun": "ellos", "form": "dijeron"}
+    ]
+  },
+  {
+    "id": "poder.presente.indicativo",
+    "lemma": "poder",
+    "ending": null,
+    "regularity": "irregular",
+    "tense": "presente",
+    "mood": "indicativo",
+    "source": "Real Academia Española conjugación estándar (hechos gramaticales públicos); tablas curadas en el repositorio rdspan.",
+    "license": "CC0-1.0",
+    "verified_at": "2026-09-11",
+    "sort_order": 110,
+    "cells": [
+      {"slot": "1s", "pronoun": "yo", "form": "puedo"},
+      {"slot": "2s", "pronoun": "tú", "form": "puedes"},
+      {"slot": "3s", "pronoun": "él", "form": "puede"},
+      {"slot": "1p", "pronoun": "nosotros", "form": "podemos"},
+      {"slot": "2p", "pronoun": "vosotros", "form": "podéis"},
+      {"slot": "3p", "pronoun": "ellos", "form": "pueden"}
+    ]
+  },
+  {
+    "id": "poder.preterito.indicativo",
+    "lemma": "poder",
+    "ending": null,
+    "regularity": "irregular",
+    "tense": "pretérito",
+    "mood": "indicativo",
+    "source": "Real Academia Española conjugación estándar (hechos gramaticales públicos); tablas curadas en el repositorio rdspan.",
+    "license": "CC0-1.0",
+    "verified_at": "2026-09-11",
+    "sort_order": 111,
+    "cells": [
+      {"slot": "1s", "pronoun": "yo", "form": "pude"},
+      {"slot": "2s", "pronoun": "tú", "form": "pudiste"},
+      {"slot": "3s", "pronoun": "él", "form": "pudo"},
+      {"slot": "1p", "pronoun": "nosotros", "form": "pudimos"},
+      {"slot": "2p", "pronoun": "vosotros", "form": "pudisteis"},
+      {"slot": "3p", "pronoun": "ellos", "form": "pudieron"}
+    ]
+  },
+  {
+    "id": "querer.presente.indicativo",
+    "lemma": "querer",
+    "ending": null,
+    "regularity": "irregular",
+    "tense": "presente",
+    "mood": "indicativo",
+    "source": "Real Academia Española conjugación estándar (hechos gramaticales públicos); tablas curadas en el repositorio rdspan.",
+    "license": "CC0-1.0",
+    "verified_at": "2026-09-11",
+    "sort_order": 120,
+    "cells": [
+      {"slot": "1s", "pronoun": "yo", "form": "quiero"},
+      {"slot": "2s", "pronoun": "tú", "form": "quieres"},
+      {"slot": "3s", "pronoun": "él", "form": "quiere"},
+      {"slot": "1p", "pronoun": "nosotros", "form": "queremos"},
+      {"slot": "2p", "pronoun": "vosotros", "form": "queréis"},
+      {"slot": "3p", "pronoun": "ellos", "form": "quieren"}
+    ]
+  },
+  {
+    "id": "querer.preterito.indicativo",
+    "lemma": "querer",
+    "ending": null,
+    "regularity": "irregular",
+    "tense": "pretérito",
+    "mood": "indicativo",
+    "source": "Real Academia Española conjugación estándar (hechos gramaticales públicos); tablas curadas en el repositorio rdspan.",
+    "license": "CC0-1.0",
+    "verified_at": "2026-09-11",
+    "sort_order": 121,
+    "cells": [
+      {"slot": "1s", "pronoun": "yo", "form": "quise"},
+      {"slot": "2s", "pronoun": "tú", "form": "quisiste"},
+      {"slot": "3s", "pronoun": "él", "form": "quiso"},
+      {"slot": "1p", "pronoun": "nosotros", "form": "quisimos"},
+      {"slot": "2p", "pronoun": "vosotros", "form": "quisisteis"},
+      {"slot": "3p", "pronoun": "ellos", "form": "quisieron"}
+    ]
+  },
+  {
+    "id": "venir.presente.indicativo",
+    "lemma": "venir",
+    "ending": null,
+    "regularity": "irregular",
+    "tense": "presente",
+    "mood": "indicativo",
+    "source": "Real Academia Española conjugación estándar (hechos gramaticales públicos); tablas curadas en el repositorio rdspan.",
+    "license": "CC0-1.0",
+    "verified_at": "2026-09-11",
+    "sort_order": 130,
+    "cells": [
+      {"slot": "1s", "pronoun": "yo", "form": "vengo"},
+      {"slot": "2s", "pronoun": "tú", "form": "vienes"},
+      {"slot": "3s", "pronoun": "él", "form": "viene"},
+      {"slot": "1p", "pronoun": "nosotros", "form": "venimos"},
+      {"slot": "2p", "pronoun": "vosotros", "form": "venís"},
+      {"slot": "3p", "pronoun": "ellos", "form": "vienen"}
+    ]
+  },
+  {
+    "id": "venir.preterito.indicativo",
+    "lemma": "venir",
+    "ending": null,
+    "regularity": "irregular",
+    "tense": "pretérito",
+    "mood": "indicativo",
+    "source": "Real Academia Española conjugación estándar (hechos gramaticales públicos); tablas curadas en el repositorio rdspan.",
+    "license": "CC0-1.0",
+    "verified_at": "2026-09-11",
+    "sort_order": 131,
+    "cells": [
+      {"slot": "1s", "pronoun": "yo", "form": "vine"},
+      {"slot": "2s", "pronoun": "tú", "form": "viniste"},
+      {"slot": "3s", "pronoun": "él", "form": "vino"},
+      {"slot": "1p", "pronoun": "nosotros", "form": "vinimos"},
+      {"slot": "2p", "pronoun": "vosotros", "form": "vinisteis"},
+      {"slot": "3p", "pronoun": "ellos", "form": "vinieron"}
+    ]
+  }
+]

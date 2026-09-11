@@ -1,0 +1,97 @@
+<section id="drill" class="drill" hx-target="#drill" hx-swap="outerHTML">
+  <p class="crumb"><a href="/">Inicio</a> · paradigma</p>
+  <header class="drill-h">
+    <h1>{{ paradigm.lemma }}</h1>
+    <p class="sub">{{ paradigm.tense }} · {{ paradigm.mood }}
+      {% if paradigm.ending %}· -{{ paradigm.ending }}{% endif %}
+      · {{ paradigm.regularity }}
+    </p>
+    <p class="state-label">Estado: <strong>{{ state_es(machine.state) }}</strong></p>
+    {% if machine.state == "mastered" %}
+    <p class="badge">Dominado · {{ scorecard.reps }} reps</p>
+    {% else %}
+    <p class="remain-lg">{% if remaining %}{{ remaining }} para la meta{% else %}Meta alcanzada{% endif %}</p>
+    <meter min="0" max="{{ scorecard.target }}" value="{{ scorecard.reps }}"></meter>
+    <p class="muted">{{ scorecard.reps }} / {{ scorecard.target }}</p>
+    {% endif %}
+  </header>
+
+  {% if feedback %}
+  <p class="flash {{ feedback.kind }}" role="status">{{ feedback.text }}</p>
+  {% endif %}
+
+  {% if machine.state != "recite" %}
+  <div class="table-wrap">
+    <table class="para">
+      <caption>Tabla {{ paradigm.lemma }}</caption>
+      <thead>
+        <tr><th>Persona</th><th>Forma</th><th>Audio</th></tr>
+      </thead>
+      <tbody>
+        {% for c in cells %}
+        <tr class="{% if feedback and feedback.per_slot is defined %}{% if feedback.per_slot[c.slot] %}ok{% else %}bad{% endif %}{% endif %}">
+          <th>{{ c.pronoun }}</th>
+          <td lang="es">{{ c.form }}</td>
+          <td>
+            {% if audio[c.slot] %}
+            <audio controls preload="none" playsinline src="{{ audio[c.slot] }}"></audio>
+            {% else %}
+            <span class="muted">sin audio</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% if full_audio %}
+    <p class="playall">
+      Tabla completa
+      <audio controls preload="none" playsinline src="{{ full_audio }}"></audio>
+    </p>
+    {% endif %}
+  </div>
+
+  <div class="actions">
+    <form method="post" action="/paradigms/{{ paradigm.id }}/listen" hx-post="/paradigms/{{ paradigm.id }}/listen">
+      <button type="submit" class="btn">Ya escuché</button>
+    </form>
+    <form method="post" action="/paradigms/{{ paradigm.id }}/recite" hx-post="/paradigms/{{ paradigm.id }}/recite">
+      <button type="submit" class="btn primary">Recitar sin mirar</button>
+    </form>
+  </div>
+
+  <details class="optional">
+    <summary>Escritura opcional (no suma reps)</summary>
+    <form class="grid-form" method="post" action="/paradigms/{{ paradigm.id }}/score" hx-post="/paradigms/{{ paradigm.id }}/score" hx-disabled-elt="find button">
+      <input type="hidden" name="mode" value="write">
+      {% for c in cells %}
+      <label>
+        {{ c.pronoun }}
+        <input name="slot_{{ c.slot }}" value="{{ answers.get(c.slot, '') }}" autocomplete="off" autocapitalize="off" spellcheck="false" lang="es">
+      </label>
+      {% endfor %}
+      <button type="submit" class="btn">Comprobar escritura</button>
+    </form>
+  </details>
+
+  {% else %}
+  <p class="prompt">
+    Aparta la vista. Recita las seis formas en voz alta, luego escríbelas para puntuar la rep.
+  </p>
+  <form class="grid-form" method="post" action="/paradigms/{{ paradigm.id }}/score" hx-post="/paradigms/{{ paradigm.id }}/score" hx-disabled-elt="find button">
+    <input type="hidden" name="mode" value="say">
+    {% for c in cells %}
+    <label>
+      {{ c.pronoun }}
+      <input name="slot_{{ c.slot }}" value="{{ answers.get(c.slot, '') }}" autocomplete="off" autocapitalize="off" spellcheck="false" lang="es" {% if loop.first %}autofocus{% endif %}>
+    </label>
+    {% endfor %}
+    <button type="submit" class="btn primary">Puntuar esta rep</button>
+  </form>
+  <form method="post" action="/paradigms/{{ paradigm.id }}/listen" hx-post="/paradigms/{{ paradigm.id }}/listen">
+    <button type="submit" class="btn ghost">Volver a escuchar</button>
+  </form>
+  {% endif %}
+
+  <p class="source muted">Fuente: {{ paradigm.source }} · {{ paradigm.license }} · {{ paradigm.verified_at }}</p>
+</section>

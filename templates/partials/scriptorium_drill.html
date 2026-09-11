@@ -1,0 +1,63 @@
+<section id="drill" class="drill" hx-target="#drill" hx-swap="outerHTML">
+  <p class="crumb"><a href="/">Inicio</a> · scriptorium</p>
+  <header class="drill-h">
+    <h1>{{ phrase.title }}</h1>
+    <p class="state-label">Estado: <strong>{{ state_es(machine.state) }}</strong></p>
+    <ul class="checks lg">
+      <li class="{% if machine.listen_ok %}on{% endif %}">oír</li>
+      <li class="{% if machine.say_ok %}on{% endif %}">decir</li>
+      <li class="{% if machine.write_ok %}on{% endif %}">escribir</li>
+    </ul>
+  </header>
+
+  {% if feedback %}
+  <p class="flash {{ feedback.kind }}" role="status">{{ feedback.text }}</p>
+  {% endif %}
+
+  {% if machine.state == "listen" %}
+  <p class="prompt">Escucha la frase. Márcala cuando la hayas oído.</p>
+  <blockquote class="phrase" lang="es">{{ phrase.text }}</blockquote>
+  {% if audio %}
+  <audio controls preload="none" playsinline src="{{ audio }}"></audio>
+  {% else %}
+  <p class="muted">Audio aún no generado. Ejecuta <code>python -m rdspan generate-audio</code>.</p>
+  {% endif %}
+  <form method="post" action="/scriptorium/{{ phrase.id }}/listen" hx-post="/scriptorium/{{ phrase.id }}/listen">
+    <button type="submit" class="btn primary">Ya escuché</button>
+  </form>
+
+  {% elif machine.state == "say" %}
+  <p class="prompt">Di la frase en voz alta, luego escríbela. No mires el texto.</p>
+  {% if audio %}
+  <p class="muted">Puedes volver a oír el audio, no el texto.</p>
+  <audio controls preload="none" playsinline src="{{ audio }}"></audio>
+  {% endif %}
+  <form method="post" action="/scriptorium/{{ phrase.id }}/say" hx-post="/scriptorium/{{ phrase.id }}/say" hx-disabled-elt="find button">
+    <label>
+      Lo que dije
+      <input name="response" value="{{ last_response|default('') }}" autocomplete="off" autocapitalize="off" spellcheck="false" lang="es" autofocus>
+    </label>
+    <button type="submit" class="btn primary">Comprobar</button>
+  </form>
+
+  {% elif machine.state == "write" %}
+  <p class="prompt">Escríbela de memoria. Sin mirar, sin audio.</p>
+  <form method="post" action="/scriptorium/{{ phrase.id }}/write" hx-post="/scriptorium/{{ phrase.id }}/write" hx-disabled-elt="find button">
+    <label>
+      Transcripción
+      <input name="response" value="{{ last_response|default('') }}" autocomplete="off" autocapitalize="off" spellcheck="false" lang="es" autofocus>
+    </label>
+    <button type="submit" class="btn primary">Comprobar escritura</button>
+  </form>
+
+  {% else %}
+  <p class="flash ok">Página completa.</p>
+  <blockquote class="phrase" lang="es">{{ phrase.text }}</blockquote>
+  {% if audio %}
+  <audio controls preload="none" playsinline src="{{ audio }}"></audio>
+  {% endif %}
+  <p><a class="btn" href="/">Siguiente</a></p>
+  {% endif %}
+
+  <p class="source muted">{{ phrase.source }} · {{ phrase.license }} · {{ phrase.verified_at }}</p>
+</section>

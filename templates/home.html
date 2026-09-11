@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}rdspan{% endblock %}
+{% block content %}
+<section class="hero">
+  <h1>Memoriza paradigmas. Transcribe frases.</h1>
+  <p class="lede">
+    El progreso son repeticiones en voz alta y páginas de scriptorium terminadas,
+    no el hábito de abrir la app.
+  </p>
+  <ul class="stats">
+    <li><strong>{{ summary.reps }}</strong> {% if summary.reps == 1 %}rep{% else %}reps{% endif %} de paradigmas</li>
+    <li><strong>{{ summary.mastered }}/{{ summary.paradigms }}</strong> tablas dominadas</li>
+    <li><strong>{{ summary.pages_done }}/{{ summary.pages }}</strong> páginas hechas</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Tablas verbales</h2>
+  <p class="hint">Escucha, recita sin mirar, anota la rep. Meta: {{ target }}.</p>
+  {% for group in grouped %}
+  <article class="group">
+    <header class="group-h">
+      <h3>{{ group.lemma }}</h3>
+      <span class="pill">{{ group.regularity }}</span>
+    </header>
+    <ul class="cards">
+      {% for p in group.rows %}
+      <li>
+        <a class="card" href="/paradigms/{{ p.id }}">
+          <span class="card-kicker">{{ p.tense }} {{ p.mood }}</span>
+          <span class="card-title">{{ p.lemma }}</span>
+          {% if p.mastered_at %}
+          <span class="badge">dominado</span>
+          {% else %}
+          <span class="remain">{% if p.reps >= p.target %}0{% else %}{{ p.target - p.reps }}{% endif %} para la meta</span>
+          {% endif %}
+          <meter min="0" max="{{ p.target }}" value="{{ p.reps }}"></meter>
+          <span class="muted">{{ p.reps }}/{{ p.target }} reps</span>
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+  </article>
+  {% endfor %}
+</section>
+
+<section>
+  <h2>Scriptorium</h2>
+  <p class="hint">Escuchar → decir → escribir. La página cuenta solo con los tres.</p>
+  <ul class="cards">
+    {% for ph in phrases %}
+    <li>
+      <a class="card" href="/scriptorium/{{ ph.id }}">
+        <span class="card-kicker">{{ ph.title }}</span>
+        <span class="card-title phrase">{{ ph.text }}</span>
+        <ul class="checks">
+          <li class="{% if ph.listen_ok %}on{% endif %}">oír</li>
+          <li class="{% if ph.say_ok %}on{% endif %}">decir</li>
+          <li class="{% if ph.write_ok %}on{% endif %}">escribir</li>
+        </ul>
+      </a>
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+{% endblock %}
