@@ -85,6 +85,14 @@ def test_tenses_page_explains_each_used_tense(
         "conditional",
         "present subjunctive",
         "imperfect subjunctive",
+        "tenses in the tables",
+        "what is happening now",
+        "ongoing or repeated past",
+        "finished past events",
+        "what will happen",
+        "what would happen",
+        "wishes, doubts",
+        "past or hypothetical",
     ):
         assert needle in body
 

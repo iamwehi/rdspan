@@ -468,11 +468,25 @@ blockquote.phrase {
   scroll-margin-top: 0.75rem;
 }
 
+.lede-en,
+.tense .en {
+  color: var(--muted);
+  font-style: italic;
+}
+
+.lede-en {
+  margin-top: -0.15rem;
+}
+
 .tense .kicker {
   color: var(--accent);
   font-family: var(--font);
   font-size: 1.05rem;
   margin: 0 0 0.4rem;
+}
+
+.tense .en {
+  margin: 0.45rem 0 0;
 }
 
 .source { font-size: 0.78rem; margin-top: 2rem; }
