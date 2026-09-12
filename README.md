@@ -67,8 +67,8 @@ Useful env vars: `BASIC_AUTH_USER`, `BASIC_AUTH_PASS`, `DATABASE_PATH`, `AUDIO_P
 
 Curated files:
 
-- `data/paradigms.json` — finite tables from Butt, Benjamin and Moreira Rodríguez, *A New Reference Grammar of Modern Spanish*, 6th ed., chapter 16. Regular models **hablar, comer, vivir**, then every usable headword in the 16.12 irregular list (compounds and radical-changing verbs included; obsolete parenthetical defectives omitted). Each lemma has presente, imperfecto, pretérito, futuro, and condicional (indicative) plus presente and imperfecto *-ra* (subjunctive). Compound tenses, the future subjunctive, and *-se* imperfect subjunctive are omitted (predictable or obsolete). Every paradigm has `source`, `license`, `verified_at`.
-- `data/lemma_en.json` — English glosses for every lemma (shown on the home list and each table). Tense names are translated in the UI (`present indicative`, and so on).
+- `data/paradigms.json` — finite tables from Butt, Benjamin and Moreira Rodríguez, *A New Reference Grammar of Modern Spanish*, 6th ed., chapter 16. **100 high-frequency lemmas**: 30 regulars (models **hablar, comer, vivir** plus everyday regulars) and 70 irregulars from the 16.12 list. The authoring catalog in `scripts/build_paradigms.py` still has the full 16.12 headwords; only this core set is seeded. Each lemma has presente, imperfecto, pretérito, futuro, and condicional (indicative) plus presente and imperfecto *-ra* (subjunctive). Compound tenses, the future subjunctive, and *-se* imperfect subjunctive are omitted (predictable or obsolete). Every paradigm has `source`, `license`, `verified_at`.
+- `data/lemma_en.json` — English glosses for every seeded lemma (shown on tables; not from the grammar). Tense names are glossed in the app (`present indicative`, etc.).
 - `data/phrases.json` — empty. Scriptorium is not seeded.
 - `data/audio/` — Piper OGG full-table tracks (pause between forms). Per-form clips, WAV intermediates, and voice models are not kept.
 

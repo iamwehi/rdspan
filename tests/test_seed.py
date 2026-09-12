@@ -28,7 +28,6 @@ EXPECTED = {
     ("vivir", "presente", "indicativo"): ["vivo", "vives", "vive", "vivimos", "vivís", "viven"],
     ("contar", "presente", "indicativo"): ["cuento", "cuentas", "cuenta", "contamos", "contáis", "cuentan"],
     ("cerrar", "presente", "indicativo"): ["cierro", "cierras", "cierra", "cerramos", "cerráis", "cierran"],
-    ("mover", "presente", "indicativo"): ["muevo", "mueves", "mueve", "movemos", "movéis", "mueven"],
     ("perder", "presente", "indicativo"): ["pierdo", "pierdes", "pierde", "perdemos", "perdéis", "pierden"],
     ("pedir", "presente", "indicativo"): ["pido", "pides", "pide", "pedimos", "pedís", "piden"],
     ("pedir", "pretérito", "indicativo"): ["pedí", "pediste", "pidió", "pedimos", "pedisteis", "pidieron"],
@@ -61,35 +60,38 @@ EXPECTED = {
     ("oír", "presente", "indicativo"): ["oigo", "oyes", "oye", "oímos", "oís", "oyen"],
     ("traer", "pretérito", "indicativo"): ["traje", "trajiste", "trajo", "trajimos", "trajisteis", "trajeron"],
     ("andar", "pretérito", "indicativo"): ["anduve", "anduviste", "anduvo", "anduvimos", "anduvisteis", "anduvieron"],
-    ("caber", "presente", "indicativo"): ["quepo", "cabes", "cabe", "cabemos", "cabéis", "caben"],
     ("caer", "pretérito", "indicativo"): ["caí", "caíste", "cayó", "caímos", "caísteis", "cayeron"],
     ("producir", "pretérito", "indicativo"): ["produje", "produjiste", "produjo", "produjimos", "produjisteis", "produjeron"],
     ("valer", "futuro", "indicativo"): ["valdré", "valdrás", "valdrá", "valdremos", "valdréis", "valdrán"],
     ("mantener", "presente", "indicativo"): ["mantengo", "mantienes", "mantiene", "mantenemos", "mantenéis", "mantienen"],
-    ("almorzar", "presente", "subjuntivo"): ["almuerce", "almuerces", "almuerce", "almorcemos", "almorcéis", "almuercen"],
     ("seguir", "presente", "indicativo"): ["sigo", "sigues", "sigue", "seguimos", "seguís", "siguen"],
     ("seguir", "pretérito", "indicativo"): ["seguí", "seguiste", "siguió", "seguimos", "seguisteis", "siguieron"],
-    ("elegir", "presente", "indicativo"): ["elijo", "eliges", "elige", "elegimos", "elegís", "eligen"],
     ("comenzar", "presente", "subjuntivo"): ["comience", "comiences", "comience", "comencemos", "comencéis", "comiencen"],
     ("leer", "pretérito", "indicativo"): ["leí", "leíste", "leyó", "leímos", "leísteis", "leyeron"],
     ("morir", "presente", "indicativo"): ["muero", "mueres", "muere", "morimos", "morís", "mueren"],
-    ("oler", "presente", "indicativo"): ["huelo", "hueles", "huele", "olemos", "oléis", "huelen"],
-    ("sonreír", "presente", "indicativo"): ["sonrío", "sonríes", "sonríe", "sonreímos", "sonreís", "sonríen"],
-    ("gruñir", "pretérito", "indicativo"): ["gruñí", "gruñiste", "gruñó", "gruñimos", "gruñisteis", "gruñeron"],
-    ("prever", "presente", "indicativo"): ["preveo", "prevés", "prevé", "prevemos", "prevéis", "prevén"],
-    ("satisfacer", "pretérito", "indicativo"): ["satisfice", "satisficiste", "satisfizo", "satisficimos", "satisficisteis", "satisficieron"],
-    ("avergonzar", "presente", "indicativo"): ["avergüenzo", "avergüenzas", "avergüenza", "avergonzamos", "avergonzáis", "avergüenzan"],
     ("huir", "presente", "indicativo"): ["huyo", "huyes", "huye", "huimos", "huis", "huyen"],
     ("reír", "pretérito", "indicativo"): ["reí", "reíste", "rio", "reímos", "reísteis", "rieron"],
-    ("cocer", "presente", "indicativo"): ["cuezo", "cueces", "cuece", "cocemos", "cocéis", "cuecen"],
     ("conseguir", "presente", "indicativo"): ["consigo", "consigues", "consigue", "conseguimos", "conseguís", "consiguen"],
-    ("negar", "presente", "subjuntivo"): ["niegue", "niegues", "niegue", "neguemos", "neguéis", "nieguen"],
-    ("adquirir", "presente", "indicativo"): ["adquiero", "adquieres", "adquiere", "adquirimos", "adquirís", "adquieren"],
-    ("maldecir", "futuro", "indicativo"): ["maldeciré", "maldecirás", "maldecirá", "maldeciremos", "maldeciréis", "maldecirán"],
     ("soñar", "presente", "indicativo"): ["sueño", "sueñas", "sueña", "soñamos", "soñáis", "sueñan"],
     ("abrir", "presente", "indicativo"): ["abro", "abres", "abre", "abrimos", "abrís", "abren"],
     ("volver", "presente", "indicativo"): ["vuelvo", "vuelves", "vuelve", "volvemos", "volvéis", "vuelven"],
+    ("llegar", "presente", "subjuntivo"): ["llegue", "llegues", "llegue", "lleguemos", "lleguéis", "lleguen"],
+    ("buscar", "pretérito", "indicativo"): ["busqué", "buscaste", "buscó", "buscamos", "buscasteis", "buscaron"],
+    ("aprender", "presente", "indicativo"): ["aprendo", "aprendes", "aprende", "aprendemos", "aprendéis", "aprenden"],
 }
+
+
+def test_every_lemma_and_tense_has_english():
+    from rdspan.i18n import TENSE_EN, lemma_en, lemma_glosses, tense_en
+
+    glosses = lemma_glosses()
+    assert set(glosses) == set(LEMMAS)
+    assert set(TENSE_EN) == set(TENSES)
+    for lemma in LEMMAS:
+        gloss = lemma_en(lemma)
+        assert gloss.startswith("to "), lemma
+    for tense, mood in TENSES:
+        assert tense_en(tense, mood), (tense, mood)
 
 
 def test_every_paradigm_has_provenance():
@@ -110,12 +112,17 @@ def test_seed_is_verbs_only_with_simple_tenses():
         ids.append(p["id"])
         assert p["id"].isascii()
     assert list(by_lemma) == LEMMAS
-    assert len(LEMMAS) >= 500
+    assert len(LEMMAS) == 100
+    assert len(_BUILD.REGULARS) == 30
+    assert len(_BUILD.CORE_IRREGULAR) == 70
     for lemma, tables in by_lemma.items():
         assert tables == set(TENSES), lemma
     assert len(paradigms) == len(LEMMAS) * len(TENSES)
     assert len(set(ids)) == len(ids)
-    assert "sonar" in by_lemma and "soñar" in by_lemma
+    assert "soñar" in by_lemma
+    assert "sonar" not in by_lemma
+    assert "zaherir" not in by_lemma
+    assert "llegar" in by_lemma and "ser" in by_lemma
 
 
 def test_curated_forms_match_checksum():
@@ -124,6 +131,7 @@ def test_curated_forms_match_checksum():
         got[(p["lemma"], p["tense"], p["mood"])] = [c["form"] for c in p["cells"]]
     for key, forms in EXPECTED.items():
         assert got[key] == forms, key
+    assert {lemma for lemma, _, _ in EXPECTED} <= set(LEMMAS)
 
 
 def test_phrases_seed_is_empty():

@@ -14,6 +14,7 @@ from rdspan import config
 from rdspan.auth import AuthMiddleware
 from rdspan.db import connect, get_or_create_user, migrate
 from rdspan.drills import IllegalTransition, ScriptoriumMachine
+from rdspan.i18n import lemma_en, tense_en
 from rdspan.matching import token_match
 from rdspan.seed import seed
 from rdspan.store import (
@@ -31,7 +32,6 @@ from rdspan.store import (
     progress_summary,
     record_attempt,
 )
-from rdspan.i18n import lemma_en, tense_en
 from rdspan.tts import cell_wav, phrase_wav, prefer_audio
 
 STATE_ES = {

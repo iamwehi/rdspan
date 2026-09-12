@@ -6,12 +6,12 @@
     <p class="gloss" lang="en">{{ lemma_en(paradigm.lemma) }}</p>
     {% endif %}
     <p class="sub">
+      <span class="pill {{ paradigm.regularity }}">{{ paradigm.regularity }}</span>
       <a href="/tiempos#{{ tense_anchor(paradigm.tense, paradigm.mood) }}">{{ paradigm.tense }} · {{ paradigm.mood }}</a>
       {% if tense_en(paradigm.tense, paradigm.mood) %}
       <span lang="en">({{ tense_en(paradigm.tense, paradigm.mood) }})</span>
       {% endif %}
       {% if paradigm.ending %}· -{{ paradigm.ending }}{% endif %}
-      · {{ paradigm.regularity }}
     </p>
     <p class="state-label">Estado: <strong>{{ state_es(machine.state) }}</strong></p>
     {% if machine.state == "mastered" %}
@@ -51,7 +51,7 @@
   </div>
 
   <form method="post" action="/paradigms/{{ paradigm.id }}/next">
-    <button type="submit" class="btn primary">Siguiente · {{ next_item.lemma }} {{ next_item.tense }}</button>
+    <button type="submit" class="btn primary">Siguiente · {{ next_item.lemma }} {{ next_item.tense }}{% if tense_en(next_item.tense, next_item.mood) %}<span lang="en">&nbsp;({{ tense_en(next_item.tense, next_item.mood) }})</span>{% endif %}</button>
   </form>
 
   <p class="source muted">Fuente: {{ paradigm.source }} · {{ paradigm.license }} · {{ paradigm.verified_at }}</p>

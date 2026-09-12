@@ -18,6 +18,10 @@ def test_home_lists_curated_verbs(client: TestClient, auth: tuple[str, str]):
     assert "reps de paradigmas" in r.text
     assert "Escucha, repite, siguiente" in r.text
     assert "/tiempos" in r.text
+    assert "to speak" in r.text
+    assert "present indicative" in r.text
+    assert 'class="pill regular"' in r.text
+    assert 'class="pill irregular"' in r.text
 
 
 def test_paradigm_loop_is_hear_repeat_next(
@@ -30,9 +34,16 @@ def test_paradigm_loop_is_hear_repeat_next(
     assert "slot_1s" not in page.text
     assert "Recitar sin mirar" not in page.text
     assert "Escucha. Repite en voz alta. Siguiente." in page.text
+    assert "to speak" in page.text
+    assert "present indicative" in page.text
+    assert 'class="pill regular"' in page.text
     assert "Siguiente ·" in page.text
     assert "<th>Audio</th>" not in page.text
     assert "Oír yo" not in page.text
+
+    irregular = client.get("/paradigms/ser.presente.indicativo", auth=auth)
+    assert irregular.status_code == 200
+    assert 'class="pill irregular"' in irregular.text
 
     nxt = client.post(f"/paradigms/{pid}/next", auth=auth, follow_redirects=False)
     assert nxt.status_code == 303
@@ -66,6 +77,16 @@ def test_tenses_page_explains_each_used_tense(
     ):
         assert needle in body
     assert 'id="preterito-indicativo"' in r.text
+    for needle in (
+        "present indicative",
+        "imperfect indicative",
+        "preterite indicative",
+        "future indicative",
+        "conditional",
+        "present subjunctive",
+        "imperfect subjunctive",
+    ):
+        assert needle in body
 
 
 def test_scriptorium_is_absent_without_phrases(

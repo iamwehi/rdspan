@@ -28,7 +28,7 @@
         <p class="gloss" lang="en">{{ lemma_en(group.lemma) }}</p>
         {% endif %}
       </div>
-      <span class="pill">{{ group.regularity }}</span>
+      <span class="pill {{ group.regularity }}">{{ group.regularity }}</span>
     </header>
     <ul class="cards">
       {% for p in group.rows %}
@@ -39,6 +39,7 @@
           <span class="card-en" lang="en">{{ tense_en(p.tense, p.mood) }}</span>
           {% endif %}
           <span class="card-title">{{ p.lemma }}</span>
+          <span class="pill {{ p.regularity }}">{{ p.regularity }}</span>
           {% if p.mastered_at %}
           <span class="badge">dominado</span>
           {% else %}

@@ -194,6 +194,29 @@ h2 { font-size: 1.25rem; margin-top: 2rem; }
   color: var(--muted);
 }
 
+.pill.regular {
+  color: var(--ok);
+  border-color: #375433;
+  background: #1c2a19;
+}
+
+.pill.irregular {
+  color: var(--accent);
+  border-color: #6b4a22;
+  background: #2a2116;
+}
+
+.card .pill {
+  justify-self: start;
+}
+
+.drill-h .sub {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem 0.55rem;
+}
+
 .badge {
   background: #24331f;
   color: var(--ok);

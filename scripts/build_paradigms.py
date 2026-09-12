@@ -5,9 +5,13 @@ This is an authoring helper. Runtime seed copies JSON into SQLite and
 does not inflect verbs. Forms are grammatical facts; citations point at
 Butt, Benjamin and Moreira Rodríguez (2019), ch. 16.
 
-Regular models are 16.3. Every other lemma is from the 16.12 list
+Regular models are 16.3. Irregular lemmas are from the 16.12 list
 (or a 16.11 model named there), conjugated like the cited model.
 Obsolete defectives in parentheses are omitted.
+
+The seeded set is ~100 high-frequency lemmas: everyday regulars plus the
+irregulars learners actually meet. CATALOG still holds the full 16.12 list
+so a form can be checked against the grammar; verb_entries() keeps only CORE.
 """
 
 from __future__ import annotations
@@ -41,8 +45,115 @@ FUT = ("é", "ás", "á", "emos", "éis", "án")
 COND = ("ía", "ías", "ía", "íamos", "íais", "ían")
 STRONG = (0, 1, 2, 5)
 
-# Regular models first (16.3), then 16.12 irregulars.
-REGULARS = ("hablar", "comer", "vivir")
+# Regular models first (16.3), then other high-frequency regulars.
+REGULARS = (
+    "hablar",
+    "comer",
+    "vivir",
+    "llegar",
+    "pasar",
+    "deber",
+    "quedar",
+    "llevar",
+    "dejar",
+    "llamar",
+    "tomar",
+    "mirar",
+    "esperar",
+    "buscar",
+    "entrar",
+    "trabajar",
+    "recibir",
+    "terminar",
+    "necesitar",
+    "cambiar",
+    "acabar",
+    "ganar",
+    "explicar",
+    "preguntar",
+    "estudiar",
+    "ayudar",
+    "gustar",
+    "escuchar",
+    "comprar",
+    "aprender",
+)
+
+# High-frequency 16.12 irregulars (common lemmas + the pattern models they use).
+CORE_IRREGULAR = frozenset(
+    {
+        "abrir",
+        "andar",
+        "aparecer",
+        "caer",
+        "cerrar",
+        "comenzar",
+        "conseguir",
+        "construir",
+        "contar",
+        "convertir",
+        "conocer",
+        "costar",
+        "creer",
+        "crecer",
+        "dar",
+        "decir",
+        "despertar",
+        "detener",
+        "descubrir",
+        "dormir",
+        "empezar",
+        "encontrar",
+        "entender",
+        "escribir",
+        "estar",
+        "haber",
+        "hacer",
+        "huir",
+        "ir",
+        "jugar",
+        "leer",
+        "llover",
+        "mantener",
+        "morir",
+        "mostrar",
+        "nacer",
+        "obtener",
+        "oír",
+        "ofrecer",
+        "parecer",
+        "pedir",
+        "pensar",
+        "perder",
+        "poder",
+        "poner",
+        "preferir",
+        "probar",
+        "producir",
+        "querer",
+        "reconocer",
+        "recordar",
+        "reír",
+        "repetir",
+        "saber",
+        "salir",
+        "seguir",
+        "sentar",
+        "sentir",
+        "ser",
+        "servir",
+        "soler",
+        "soñar",
+        "suponer",
+        "tener",
+        "traer",
+        "traducir",
+        "valer",
+        "venir",
+        "ver",
+        "volver",
+    }
+)
 
 
 def _tables(pres: str, impf: str, pret: str, fut: str, cond: str, subj: str, imps: str):
@@ -1351,14 +1462,21 @@ def slug(text: str) -> str:
 
 
 def verb_entries() -> list[tuple[str, str, str, str]]:
-    """lemma, family, regularity, ending — regulars first, then 16.12 A–Z."""
+    """lemma, family, regularity, ending — regulars first, then kept 16.12 A–Z."""
+    if len(REGULARS) != len(set(REGULARS)):
+        raise SystemExit("duplicate in REGULARS")
+    catalog = dict(parse_catalog())
+    missing = sorted(CORE_IRREGULAR - catalog.keys())
+    extra = CORE_IRREGULAR & set(REGULARS)
+    if missing:
+        raise SystemExit(f"CORE_IRREGULAR not in catalog: {missing}")
+    if extra:
+        raise SystemExit(f"CORE_IRREGULAR overlaps REGULARS: {sorted(extra)}")
     out = [(lemma, lemma[-2:], "regular", lemma[-2:]) for lemma in REGULARS]
-    seen = set(REGULARS)
     irregulars = []
-    for lemma, family in parse_catalog():
-        if lemma in seen:
+    for lemma, family in catalog.items():
+        if lemma not in CORE_IRREGULAR:
             continue
-        seen.add(lemma)
         irregulars.append((lemma, family, "irregular", ending_of(lemma)))
     irregulars.sort(key=lambda row: (slug(row[0]), row[0]))
     return out + irregulars
