@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Tiempos · rdspan{% endblock %}
+{% block content %}
+<section class="tenses">
+  <p class="crumb"><a href="/">Inicio</a> · tiempos</p>
+  <h1>Tiempos de las tablas</h1>
+  <p class="lede">
+    Cada paradigma es un tiempo simple. Aquí va para qué sirve cada uno.
+    No hay tiempos compuestos, futuro de subjuntivo ni imperfecto en <em>-se</em>.
+  </p>
+
+  <article class="tense" id="presente-indicativo">
+    <h2>Presente de indicativo <span class="tense-en" lang="en">{{ tense_en("presente", "indicativo") }}</span></h2>
+    <p class="kicker">hablo, comes, vive</p>
+    <p>Lo que ocurre ahora, lo habitual y las verdades generales. También vale para un futuro inmediato si el contexto lo deja claro: <em>Mañana salgo a las ocho</em>.</p>
+  </article>
+
+  <article class="tense" id="imperfecto-indicativo">
+    <h2>Imperfecto de indicativo <span class="tense-en" lang="en">{{ tense_en("imperfecto", "indicativo") }}</span></h2>
+    <p class="kicker">hablaba, comía, vivía</p>
+    <p>El pasado en curso o repetido: escenas, costumbres, descripciones, lo que <em>estaba pasando</em> cuando ocurrió otra cosa. No cuenta un evento cerrado.</p>
+  </article>
+
+  <article class="tense" id="preterito-indicativo">
+    <h2>Pretérito de indicativo <span class="tense-en" lang="en">{{ tense_en("pretérito", "indicativo") }}</span></h2>
+    <p class="kicker">hablé, comí, viví</p>
+    <p>Hechos pasados y terminados: lo que ocurrió una vez o un número de veces y ya se cerró. Contrasta con el imperfecto, que pinta el fondo.</p>
+  </article>
+
+  <article class="tense" id="futuro-indicativo">
+    <h2>Futuro de indicativo <span class="tense-en" lang="en">{{ tense_en("futuro", "indicativo") }}</span></h2>
+    <p class="kicker">hablaré, comerás, vivirá</p>
+    <p>Lo que sucederá. También expresa probabilidad en el presente: <em>Estará en casa</em> ≈ “supongo que está en casa”.</p>
+  </article>
+
+  <article class="tense" id="condicional-indicativo">
+    <h2>Condicional <span class="tense-en" lang="en">{{ tense_en("condicional", "indicativo") }}</span></h2>
+    <p class="kicker">hablaría, comerías, viviría</p>
+    <p>Lo que ocurriría (a menudo con <em>si</em> + imperfecto de subjuntivo). Sirve para cortesía (<em>¿Podrías…?</em>) y para probabilidad en el pasado: <em>Tendría treinta años</em>.</p>
+  </article>
+
+  <article class="tense" id="presente-subjuntivo">
+    <h2>Presente de subjuntivo</h2>
+    <p class="kicker">hable, comas, viva</p>
+    <p>Deseos, dudas, valoraciones e influencia sobre otra persona, anclados en el presente o el futuro: <em>Quiero que vengas</em>, <em>Es posible que llueva</em>, <em>Para que lo sepas</em>.</p>
+  </article>
+
+  <article class="tense" id="imperfecto-subjuntivo">
+    <h2>Imperfecto de subjuntivo <span class="muted">(-ra)</span></h2>
+    <p class="kicker">hablara, comieras, viviera</p>
+    <p>La misma idea que el presente de subjuntivo, pero en un marco pasado o hipotético: <em>Quería que vinieras</em>, <em>Si tuviera tiempo, iría</em>. Las tablas usan la forma en <em>-ra</em>, no la de <em>-se</em>.</p>
+  </article>
+</section>
+{% endblock %}

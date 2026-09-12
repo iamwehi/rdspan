@@ -53,6 +53,49 @@ def load_phrases(path: Path | None = None) -> list[dict]:
     return raw
 
 
+def _in_clause(ids: list[str]) -> tuple[str, list[str]]:
+    return ",".join("?" * len(ids)), ids
+
+
+def _drop_unused_paradigms(conn: sqlite3.Connection, keep: set[str]) -> None:
+    existing = [row["id"] for row in conn.execute("SELECT id FROM paradigms")]
+    drop = [pid for pid in existing if pid not in keep]
+    if not drop:
+        return
+    clause, params = _in_clause(drop)
+    conn.execute(
+        f"""
+        DELETE FROM attempts WHERE drill_id IN (
+            SELECT id FROM drills WHERE paradigm_id IN ({clause})
+        )
+        """,
+        params,
+    )
+    conn.execute(f"DELETE FROM drills WHERE paradigm_id IN ({clause})", params)
+    conn.execute(f"DELETE FROM scorecards WHERE paradigm_id IN ({clause})", params)
+    conn.execute(f"DELETE FROM paradigm_cells WHERE paradigm_id IN ({clause})", params)
+    conn.execute(f"DELETE FROM paradigms WHERE id IN ({clause})", params)
+
+
+def _drop_unused_phrases(conn: sqlite3.Connection, keep: set[str]) -> None:
+    existing = [row["id"] for row in conn.execute("SELECT id FROM phrases")]
+    drop = [pid for pid in existing if pid not in keep]
+    if not drop:
+        return
+    clause, params = _in_clause(drop)
+    conn.execute(
+        f"""
+        DELETE FROM attempts WHERE drill_id IN (
+            SELECT id FROM drills WHERE page_id IN ({clause})
+        )
+        """,
+        params,
+    )
+    conn.execute(f"DELETE FROM drills WHERE page_id IN ({clause})", params)
+    conn.execute(f"DELETE FROM scriptorium_pages WHERE page_id IN ({clause})", params)
+    conn.execute(f"DELETE FROM phrases WHERE id IN ({clause})", params)
+
+
 def seed(conn: sqlite3.Connection) -> dict[str, int]:
     """Load curated JSON into SQLite. Never synthesizes verb forms."""
     paradigms = load_paradigms()
@@ -126,5 +169,7 @@ def seed(conn: sqlite3.Connection) -> dict[str, int]:
                 int(ph.get("sort_order", 0)),
             ),
         )
+    _drop_unused_paradigms(conn, {p["id"] for p in paradigms})
+    _drop_unused_phrases(conn, {ph["id"] for ph in phrases})
     conn.commit()
     return {"paradigms": len(paradigms), "phrases": len(phrases), "seeded_at": utcnow()}

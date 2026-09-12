@@ -28,6 +28,14 @@ def cmd_generate_audio(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_stitch_full(_args: argparse.Namespace) -> int:
+    from rdspan.tts import stitch_all_full_tracks
+
+    stats = stitch_all_full_tracks()
+    print(f"Full tracks written={stats['written']} skipped={stats['skipped']}")
+    return 0
+
+
 def cmd_serve(_args: argparse.Namespace) -> int:
     import uvicorn
 
@@ -54,15 +62,21 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="rdspan", description="Spanish by Ranieri–Dowling")
     sub = parser.add_subparsers(dest="cmd", required=True)
 
-    p_seed = sub.add_parser("seed", help="Load curated paradigms and phrases into SQLite")
+    p_seed = sub.add_parser("seed", help="Load curated verb paradigms into SQLite")
     p_seed.set_defaults(func=cmd_seed)
 
     p_audio = sub.add_parser(
         "generate-audio",
-        help="Pre-generate Piper WAV/OGG for every cell and phrase (not used mid-drill)",
+        help="Pre-generate Piper OGG full-table tracks (not used mid-drill)",
     )
     p_audio.add_argument("--force", action="store_true", help="Regenerate even if files exist")
     p_audio.set_defaults(func=cmd_generate_audio)
+
+    p_stitch = sub.add_parser(
+        "stitch-full",
+        help="Rebuild full-table OGG tracks with a repeat pause between forms",
+    )
+    p_stitch.set_defaults(func=cmd_stitch_full)
 
     p_serve = sub.add_parser("serve", help="Run the web app")
     p_serve.set_defaults(func=cmd_serve)

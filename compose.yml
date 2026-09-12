@@ -5,20 +5,20 @@ services:
       dockerfile: Containerfile
     image: rdspan:local
     ports:
-      - "8080:8080"
+      - "${RDSPAN_PORT:-8081}:8081"
     environment:
       BASIC_AUTH_USER: ${BASIC_AUTH_USER:-rdspan}
       BASIC_AUTH_PASS: ${BASIC_AUTH_PASS:-changeme}
       DATABASE_PATH: /data/rdspan.db
-      AUDIO_PATH: /audio
+      AUDIO_PATH: /app/data/audio
+      HOST: 0.0.0.0
+      PORT: "8081"
       SCORECARD_TARGET: ${SCORECARD_TARGET:-100}
       PIPER_VOICE: ${PIPER_VOICE:-es_ES-davefx-medium}
       PIPER_LENGTH_SCALE: ${PIPER_LENGTH_SCALE:-1.35}
     volumes:
       - rdspan_data:/data
-      - rdspan_audio:/audio
     restart: unless-stopped
 
 volumes:
   rdspan_data:
-  rdspan_audio:

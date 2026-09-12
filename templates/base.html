@@ -12,8 +12,14 @@
 <body>
   <a class="skip" href="#main">Saltar al contenido</a>
   <header class="top">
-    <a class="brand" href="/">rdspan</a>
-    <p class="tag">Ranieri–Dowling · español</p>
+    <div class="brand-block">
+      <a class="brand" href="/">rdspan</a>
+      <p class="tag">Ranieri–Dowling · español</p>
+    </div>
+    <nav class="top-nav" aria-label="Secciones">
+      <a class="btn primary" href="/">Tablas</a>
+      <a class="btn primary" href="/tiempos">Tiempos</a>
+    </nav>
   </header>
   <main id="main">
     {% block content %}{% endblock %}

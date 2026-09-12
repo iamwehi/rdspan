@@ -1,4 +1,4 @@
-"""Pre-generate Piper WAV/OGG for every paradigm cell and phrase. Never called mid-drill."""
+"""Pre-generate Piper OGG full-table tracks (and phrases). Never called mid-drill."""
 
 from __future__ import annotations
 
@@ -8,6 +8,7 @@ import subprocess
 import sys
 import urllib.request
 import wave
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 from rdspan import config
@@ -21,6 +22,7 @@ VOICE_FILES = {
 }
 
 HF_BASE = "https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0"
+CELL_SLOTS = ("1s", "2s", "3s", "1p", "2p", "3p")
 
 
 def _safe_id(value: str) -> str:
@@ -60,6 +62,13 @@ def prefer_audio(wav_path: Path) -> Path | None:
     if wav_path.is_file():
         return wav_path
     return None
+
+
+def _discard_cell_clips(paradigm_id: str) -> None:
+    directory = cell_dir(paradigm_id)
+    for slot in CELL_SLOTS:
+        for suffix in (".wav", ".ogg"):
+            (directory / f"{slot}{suffix}").unlink(missing_ok=True)
 
 
 def _download(url: str, dest: Path) -> None:
@@ -128,16 +137,18 @@ def _maybe_ogg(wav_path: Path) -> None:
     )
 
 
-def _concat_wavs(paths: list[Path], dest: Path, pause_ms: int = 450) -> None:
+def _concat_wavs(paths: list[Path], dest: Path, pause_ms: int | None = None) -> None:
+    gap = config.full_audio_pause_ms() if pause_ms is None else pause_ms
     frames: list[bytes] = []
     params = None
-    for path in paths:
+    for i, path in enumerate(paths):
         with wave.open(str(path), "rb") as src:
             if params is None:
                 params = src.getparams()
             frames.append(src.readframes(src.getnframes()))
-            silence_frames = int(src.getframerate() * pause_ms / 1000)
-            frames.append(b"\x00\x00" * silence_frames)
+            if i < len(paths) - 1:
+                silence_frames = int(src.getframerate() * gap / 1000)
+                frames.append(b"\x00\x00" * silence_frames)
     if params is None:
         return
     dest.parent.mkdir(parents=True, exist_ok=True)
@@ -147,9 +158,79 @@ def _concat_wavs(paths: list[Path], dest: Path, pause_ms: int = 450) -> None:
             out.writeframes(chunk)
 
 
-def generate_audio(*, force: bool = False) -> dict[str, int]:
-    from piper import PiperVoice
+def _ffmpeg() -> str | None:
+    return shutil.which("ffmpeg")
 
+
+def stitch_full_ogg(paradigm_id: str, pause_ms: int | None = None) -> bool:
+    """Build full.ogg from cell OGGs with a repeat-pause between forms."""
+    ffmpeg = _ffmpeg()
+    if not ffmpeg:
+        return False
+    gap = config.full_audio_pause_ms() if pause_ms is None else pause_ms
+    directory = cell_dir(paradigm_id)
+    parts = [directory / f"{slot}.ogg" for slot in CELL_SLOTS]
+    if not all(path.is_file() for path in parts):
+        return False
+    tmp = directory / "full.tmp.ogg"
+    dest = directory / "full.ogg"
+    inputs: list[str] = []
+    filters: list[str] = []
+    pause_s = gap / 1000
+    for i, path in enumerate(parts):
+        inputs.extend(["-i", str(path)])
+        if i < len(parts) - 1:
+            filters.append(f"[{i}]apad=pad_dur={pause_s:.3f}[a{i}]")
+        else:
+            filters.append(f"[{i}]anull[a{i}]")
+    concat_in = "".join(f"[a{i}]" for i in range(len(parts)))
+    filters.append(f"{concat_in}concat=n={len(parts)}:v=0:a=1[out]")
+    try:
+        subprocess.run(
+            [
+                ffmpeg,
+                "-y",
+                "-loglevel",
+                "error",
+                *inputs,
+                "-filter_complex",
+                ";".join(filters),
+                "-map",
+                "[out]",
+                "-c:a",
+                "libopus",
+                "-b:a",
+                "48k",
+                str(tmp),
+            ],
+            check=True,
+        )
+        tmp.replace(dest)
+        return True
+    except (OSError, subprocess.CalledProcessError):
+        return False
+    finally:
+        tmp.unlink(missing_ok=True)
+
+
+def stitch_all_full_tracks(*, pause_ms: int | None = None, workers: int = 8) -> dict[str, int]:
+    root = config.audio_path() / "cells"
+    if not root.is_dir():
+        return {"written": 0, "skipped": 0}
+    ids = sorted(path.name for path in root.iterdir() if path.is_dir())
+    written = 0
+    skipped = 0
+    with ThreadPoolExecutor(max_workers=workers) as pool:
+        futures = {pool.submit(stitch_full_ogg, pid, pause_ms): pid for pid in ids}
+        for fut in as_completed(futures):
+            if fut.result():
+                written += 1
+            else:
+                skipped += 1
+    return {"written": written, "skipped": skipped}
+
+
+def generate_audio(*, force: bool = False) -> dict[str, int]:
     conn = connect()
     try:
         migrate(conn)
@@ -163,45 +244,67 @@ def generate_audio(*, force: bool = False) -> dict[str, int]:
         conn.close()
 
     if not cells and not phrases:
-        raise RuntimeError("No paradigms or phrases in the database. Run: python -m rdspan seed")
-
-    onnx = ensure_voice()
-    voice = PiperVoice.load(str(onnx))
-    length = config.piper_length_scale()
-    written = 0
-    skipped = 0
+        raise RuntimeError("No paradigms in the database. Run: python -m rdspan seed")
 
     grouped: dict[str, list[tuple[str, str]]] = {}
     for row in cells:
         grouped.setdefault(row["paradigm_id"], []).append((row["slot"], row["tts_text"]))
 
+    cell_jobs: list[tuple[str, str, str, Path]] = []
+    full_jobs: list[tuple[str, list[tuple[str, str]]]] = []
+    phrase_jobs: list[tuple[str, str, Path]] = []
+    skipped = 0
+
     for paradigm_id, items in grouped.items():
+        full = cell_dir(paradigm_id) / "full.wav"
+        if not force and audio_exists(full):
+            skipped += 1
+            _discard_cell_clips(paradigm_id)
+            continue
         for slot, text in items:
             dest = cell_wav(paradigm_id, slot)
             if not force and audio_exists(dest):
                 skipped += 1
             else:
-                print(f"TTS {paradigm_id} {slot}: {text}", file=sys.stderr)
-                _synthesize_wav(voice, text, dest, length)
-                _maybe_ogg(dest)
-                written += 1
-        full = cell_dir(paradigm_id) / "full.wav"
-        wavs = [p for p in (cell_wav(paradigm_id, s) for s, _ in items) if p.is_file()]
-        if force or not audio_exists(full):
-            if len(wavs) == len(items):
-                _concat_wavs(wavs, full)
-                _maybe_ogg(full)
-                written += 1
-        else:
-            skipped += 1
+                cell_jobs.append((paradigm_id, slot, text, dest))
+        full_jobs.append((paradigm_id, items))
 
     for row in phrases:
         dest = phrase_wav(row["id"])
         if not force and audio_exists(dest):
             skipped += 1
-            continue
-        print(f"TTS phrase {row['id']}: {row['tts_text']}", file=sys.stderr)
-        _synthesize_wav(voice, row["tts_text"], dest, length)
+        else:
+            phrase_jobs.append((row["id"], row["tts_text"], dest))
+
+    if not cell_jobs and not full_jobs and not phrase_jobs:
+        return {"written": 0, "skipped": skipped}
+
+    from piper import PiperVoice
+
+    onnx = ensure_voice()
+    voice = PiperVoice.load(str(onnx))
+    length = config.piper_length_scale()
+    written = 0
+
+    for paradigm_id, slot, text, dest in cell_jobs:
+        print(f"TTS {paradigm_id} {slot}: {text}", file=sys.stderr)
+        _synthesize_wav(voice, text, dest, length)
+        written += 1
+
+    for paradigm_id, items in full_jobs:
+        wavs = [p for p in (cell_wav(paradigm_id, s) for s, _ in items) if p.is_file()]
+        if len(wavs) == len(items):
+            full = cell_dir(paradigm_id) / "full.wav"
+            _concat_wavs(wavs, full)
+            _maybe_ogg(full)
+            written += 1
+        elif stitch_full_ogg(paradigm_id):
+            written += 1
+        _discard_cell_clips(paradigm_id)
+
+    for phrase_id, text, dest in phrase_jobs:
+        print(f"TTS phrase {phrase_id}: {text}", file=sys.stderr)
+        _synthesize_wav(voice, text, dest, length)
         _maybe_ogg(dest)
         written += 1
 

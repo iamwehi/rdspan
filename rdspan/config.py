@@ -22,7 +22,7 @@ def audio_path() -> Path:
     raw = os.environ.get("AUDIO_PATH")
     if raw:
         return Path(raw).resolve()
-    return (project_root() / "var" / "audio").resolve()
+    return (project_root() / "data" / "audio").resolve()
 
 
 def data_dir() -> Path:
@@ -59,6 +59,11 @@ def piper_voice() -> str:
 
 def piper_length_scale() -> float:
     return float(os.environ.get("PIPER_LENGTH_SCALE", "1.35"))
+
+
+def full_audio_pause_ms() -> int:
+    """Silence between forms on the full-table track, so the listener can repeat."""
+    return int(os.environ.get("FULL_AUDIO_PAUSE_MS", "2000"))
 
 
 def host() -> str:

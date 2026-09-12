@@ -9,7 +9,7 @@ class IllegalTransition(ValueError):
     pass
 
 
-PARADIGM_STATES = ("idle", "preview", "recite", "scored", "mastered")
+PARADIGM_STATES = ("idle", "preview", "scored", "mastered")
 SCRIPTORIUM_STATES = ("idle", "listen", "say", "write", "done")
 
 
@@ -20,31 +20,17 @@ class ParadigmMachine:
     target: int
 
     def open(self) -> ParadigmMachine:
-        if self.state == "idle":
+        if self.state in ("idle", "recite"):
             return ParadigmMachine("preview", self.reps, self.target)
         return self
 
-    def begin_recite(self) -> ParadigmMachine:
-        if self.state not in ("preview", "scored", "mastered"):
-            raise IllegalTransition(
-                "Primero escucha la tabla (vista previa), luego recita."
-            )
-        return ParadigmMachine("recite", self.reps, self.target)
-
-    def preview_again(self) -> ParadigmMachine:
-        if self.state not in ("scored", "recite", "mastered", "preview"):
-            raise IllegalTransition(f"No se puede volver a vista previa desde {self.state}")
-        if self.state == "mastered":
-            return self
-        return ParadigmMachine("preview", self.reps, self.target)
-
-    def score_recite(self, passed: bool) -> ParadigmMachine:
-        if self.state != "recite":
-            raise IllegalTransition("La rep solo cuenta en el paso de recitar")
-        reps = self.reps + 1 if passed else self.reps
-        if reps >= self.target:
-            return ParadigmMachine("mastered", reps, self.target)
-        return ParadigmMachine("scored", reps, self.target)
+    def ack_repeat(self) -> ParadigmMachine:
+        """Honor-system: heard the table and repeated it aloud. Counts one rep."""
+        current = self.open() if self.state in ("idle", "recite") else self
+        reps = current.reps + 1
+        if reps >= current.target:
+            return ParadigmMachine("mastered", reps, current.target)
+        return ParadigmMachine("scored", reps, current.target)
 
     @property
     def remaining(self) -> int:

@@ -6,8 +6,7 @@ import sqlite3
 
 from rdspan import config
 from rdspan.db import utcnow
-from rdspan.drills import ParadigmMachine, ScriptoriumMachine
-from rdspan.matching import all_cells_match, token_match
+from rdspan.drills import ParadigmMachine
 
 
 def ensure_scorecard(conn: sqlite3.Connection, user_id: int, paradigm_id: str) -> sqlite3.Row:
@@ -167,36 +166,36 @@ def load_cells(conn: sqlite3.Connection, paradigm_id: str) -> list[sqlite3.Row]:
     ).fetchall()
 
 
-def score_paradigm_recite(
-    conn: sqlite3.Connection,
-    user_id: int,
-    paradigm_id: str,
-    answers: dict[str, str],
-    mode: str,
-) -> dict:
-    if mode not in ("say", "write"):
-        raise ValueError("mode must be say or write")
+def ack_paradigm_repeat(
+    conn: sqlite3.Connection, user_id: int, paradigm_id: str
+) -> ParadigmMachine:
     drill = get_or_create_paradigm_drill(conn, user_id, paradigm_id)
     scorecard = ensure_scorecard(conn, user_id, paradigm_id)
-    cells = load_cells(conn, paradigm_id)
-    tuples = [(c["slot"], c["form"], c["pronoun"]) for c in cells]
-    passed, per_slot = all_cells_match(tuples, answers)
-    response = " | ".join(f"{slot}:{answers.get(slot, '')}" for slot, _, _ in tuples)
-    record_attempt(conn, user_id, drill["id"], mode, passed, response)
+    nxt = paradigm_machine(scorecard, drill).ack_repeat()
+    record_attempt(conn, user_id, drill["id"], "say", True, None)
+    apply_paradigm_machine(
+        conn,
+        user_id,
+        paradigm_id,
+        drill,
+        nxt,
+        mastered_now=nxt.state == "mastered" and scorecard["mastered_at"] is None,
+    )
+    return nxt
 
-    machine = paradigm_machine(scorecard, drill)
-    if mode == "say":
-        nxt = machine.score_recite(passed)
-        apply_paradigm_machine(
-            conn,
-            user_id,
-            paradigm_id,
-            drill,
-            nxt,
-            mastered_now=nxt.state == "mastered" and scorecard["mastered_at"] is None,
-        )
-    # Write never increments reps and does not advance the recite machine.
-    return {"passed": passed, "per_slot": per_slot, "mode": mode}
+
+def next_paradigm(conn: sqlite3.Connection, paradigm_id: str) -> sqlite3.Row:
+    rows = conn.execute(
+        "SELECT * FROM paradigms ORDER BY sort_order, lemma, id"
+    ).fetchall()
+    if not rows:
+        raise ValueError("no paradigms seeded")
+    ids = [row["id"] for row in rows]
+    try:
+        idx = ids.index(paradigm_id)
+    except ValueError:
+        return rows[0]
+    return rows[(idx + 1) % len(rows)]
 
 
 def home_paradigms(conn: sqlite3.Connection, user_id: int) -> list[sqlite3.Row]:

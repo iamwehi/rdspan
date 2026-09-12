@@ -36,9 +36,53 @@ body {
 }
 .skip:focus { left: 1rem; top: 1rem; background: var(--accent); color: var(--accent-ink); padding: 0.5rem; }
 
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+a:visited {
+  color: var(--accent);
+}
+
 .top {
-  padding: 1rem 1.1rem 0.4rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 0.45rem 0.7rem;
+  width: 100%;
+  min-width: 0;
+  padding: 1rem 1.1rem 0.65rem;
   border-bottom: 1px solid var(--line);
+}
+
+.brand-block { min-width: 0; }
+
+.top-nav {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.4rem;
+  width: max-content;
+  max-width: 100%;
+  justify-self: end;
+}
+
+.top-nav .btn {
+  padding: 0.4rem 0.85rem;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+@media (max-width: 360px) {
+  .top {
+    grid-template-columns: 1fr;
+  }
+
+  .top-nav {
+    justify-content: flex-start;
+  }
 }
 
 .brand {
@@ -103,8 +147,41 @@ h2 { font-size: 1.25rem; margin-top: 2rem; }
 
 .group-h {
   display: flex;
-  align-items: baseline;
+  align-items: flex-start;
   gap: 0.6rem;
+}
+
+.group-title h3 { margin-bottom: 0.15rem; }
+
+.gloss {
+  margin: 0;
+  color: var(--muted);
+  font-family: var(--font);
+  font-style: italic;
+  font-weight: 400;
+}
+
+.drill-h .gloss {
+  font-size: 1.05rem;
+  margin: 0.1rem 0 0.45rem;
+}
+
+.card-en {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-style: italic;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.tense-en {
+  display: block;
+  margin-top: 0.25rem;
+  color: var(--muted);
+  font-family: var(--ui);
+  font-size: 0.95rem;
+  font-weight: 500;
+  font-style: italic;
 }
 
 .pill, .badge {
@@ -206,7 +283,15 @@ meter::-webkit-meter-optimum-value { background: var(--accent); border-radius: 9
 .state-label { color: var(--muted); margin: 0.2rem 0; }
 
 .crumb { color: var(--muted); font-size: 0.85rem; }
-.crumb a { color: var(--accent); }
+.crumb a,
+.sub a {
+  color: var(--accent);
+  text-decoration: none;
+}
+.crumb a:hover,
+.sub a:hover {
+  text-decoration: underline;
+}
 
 .flash {
   border-radius: 0.7rem;
@@ -217,32 +302,68 @@ meter::-webkit-meter-optimum-value { background: var(--accent); border-radius: 9
 .flash.ok { background: #1c2a19; color: var(--ok); }
 .flash.bad { background: #2c1b18; color: var(--bad); }
 
+.table-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.para-box {
+  width: fit-content;
+  max-width: 100%;
+  margin-inline: auto;
+}
+
 .para {
-  width: 100%;
-  border-collapse: collapse;
   font-family: var(--font);
   font-size: 1.15rem;
+  width: auto;
+  border-collapse: collapse;
 }
 
-.para th, .para td {
+.para caption {
+  text-align: center;
+  color: var(--muted);
+  padding-bottom: 0.4rem;
+}
+
+.para th,
+.para td {
   text-align: left;
-  padding: 0.65rem 0.4rem;
-  border-bottom: 1px solid var(--line);
+  padding: 0.7rem 0.8rem 0.7rem 0;
   vertical-align: middle;
+  border-bottom: 1px solid var(--line);
 }
 
-.para caption { text-align: left; color: var(--muted); padding-bottom: 0.4rem; }
+.para thead th {
+  font-family: var(--ui);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  padding-top: 0;
+  padding-bottom: 0.45rem;
+}
 
-.para tr.ok td { color: var(--ok); }
-.para tr.bad td { color: var(--bad); }
+.para tbody th {
+  font-weight: 600;
+  white-space: nowrap;
+  width: 1%;
+}
+
+.playall {
+  margin-top: 1.1rem;
+  width: 100%;
+  text-align: left;
+}
 
 audio {
+  display: block;
   width: 100%;
-  max-width: 12rem;
+  max-width: 100%;
   height: 2.2rem;
 }
-
-.playall audio { max-width: 100%; }
 
 .actions, form {
   display: grid;
@@ -270,6 +391,10 @@ audio {
   color: var(--accent-ink);
   border-color: var(--accent);
   font-weight: 600;
+}
+
+.btn.primary:visited {
+  color: var(--accent-ink);
 }
 
 .btn.ghost {
@@ -311,21 +436,24 @@ blockquote.phrase {
   background: var(--bg-2);
 }
 
-.optional {
-  margin: 1.4rem 0;
+.hint a { color: var(--accent); }
+
+.tense {
+  margin: 1.4rem 0 0;
+  padding-top: 1rem;
   border-top: 1px solid var(--line);
-  padding-top: 0.8rem;
+  scroll-margin-top: 0.75rem;
 }
 
-.optional summary {
-  min-height: 2.5rem;
-  cursor: pointer;
-  color: var(--muted);
+.tense .kicker {
+  color: var(--accent);
+  font-family: var(--font);
+  font-size: 1.05rem;
+  margin: 0 0 0.4rem;
 }
 
 .source { font-size: 0.78rem; margin-top: 2rem; }
 
 @media (min-width: 640px) {
   .stats { grid-template-columns: repeat(3, 1fr); }
-  audio { max-width: 14rem; }
 }

@@ -6,7 +6,7 @@ from contextlib import asynccontextmanager
 from typing import Annotated
 
 from fastapi import Depends, FastAPI, Form, HTTPException, Request
-from fastapi.responses import FileResponse, HTMLResponse
+from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
@@ -17,6 +17,7 @@ from rdspan.drills import IllegalTransition, ScriptoriumMachine
 from rdspan.matching import token_match
 from rdspan.seed import seed
 from rdspan.store import (
+    ack_paradigm_repeat,
     apply_paradigm_machine,
     ensure_scorecard,
     ensure_scriptorium_page,
@@ -25,11 +26,12 @@ from rdspan.store import (
     home_paradigms,
     home_phrases,
     load_cells,
+    next_paradigm,
     paradigm_machine,
     progress_summary,
     record_attempt,
-    score_paradigm_recite,
 )
+from rdspan.i18n import lemma_en, tense_en
 from rdspan.tts import cell_wav, phrase_wav, prefer_audio
 
 STATE_ES = {
@@ -45,6 +47,11 @@ STATE_ES = {
 }
 
 SAFE_ID = set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789._-")
+_TENSE_SLUG = str.maketrans("áéíóúüñÁÉÍÓÚÜÑ", "aeiouunAEIOUUN")
+
+
+def tense_anchor(tense: str, mood: str) -> str:
+    return f"{tense.translate(_TENSE_SLUG)}-{mood}".replace(" ", "-")
 
 
 def _check_id(value: str) -> str:
@@ -95,6 +102,9 @@ def create_app() -> FastAPI:
     app.add_middleware(AuthMiddleware)
     templates = Jinja2Templates(directory=str(config.templates_dir()))
     templates.env.globals["state_es"] = lambda s: STATE_ES.get(s, s)
+    templates.env.globals["tense_anchor"] = tense_anchor
+    templates.env.globals["lemma_en"] = lemma_en
+    templates.env.globals["tense_en"] = tense_en
     static = config.static_dir()
     if static.is_dir():
         app.mount("/static", StaticFiles(directory=str(static)), name="static")
@@ -131,7 +141,7 @@ def create_app() -> FastAPI:
         drill = get_or_create_paradigm_drill(conn, user_id, paradigm_id)
         scorecard = ensure_scorecard(conn, user_id, paradigm_id)
         machine = paradigm_machine(scorecard, drill)
-        if machine.state == "idle":
+        if machine.state in ("idle", "recite"):
             machine = machine.open()
             apply_paradigm_machine(conn, user_id, paradigm_id, drill, machine)
             drill = get_or_create_paradigm_drill(conn, user_id, paradigm_id)
@@ -143,10 +153,9 @@ def create_app() -> FastAPI:
             "machine": machine,
             "cells": cells,
             "remaining": machine.remaining,
-            "audio": {c["slot"]: cell_audio_url(paradigm_id, c["slot"]) for c in cells},
             "full_audio": cell_audio_url(paradigm_id, "full"),
             "feedback": None,
-            "answers": {},
+            "next_item": next_paradigm(conn, paradigm_id),
         }
 
     def scriptorium_context(conn: sqlite3.Connection, user_id: int, page_id: str) -> dict:
@@ -225,6 +234,10 @@ def create_app() -> FastAPI:
             },
         )
 
+    @app.get("/tiempos", response_class=HTMLResponse)
+    def tenses_page(request: Request, username: UserName):
+        return render(request, "tenses.html", {})
+
     @app.get("/paradigms/{paradigm_id}", response_class=HTMLResponse)
     def paradigm_page(request: Request, paradigm_id: str, conn: Db, username: UserName):
         paradigm_id = _check_id(paradigm_id)
@@ -232,98 +245,14 @@ def create_app() -> FastAPI:
         ctx = paradigm_context(conn, user["id"], paradigm_id)
         return render(request, "paradigm.html", ctx)
 
-    def paradigm_fragment(request: Request, ctx: dict) -> HTMLResponse:
-        name = "partials/paradigm_drill.html" if is_htmx(request) else "paradigm.html"
-        return render(request, name, ctx)
-
-    @app.post("/paradigms/{paradigm_id}/listen", response_class=HTMLResponse)
-    def paradigm_listen(request: Request, paradigm_id: str, conn: Db, username: UserName):
+    @app.post("/paradigms/{paradigm_id}/next")
+    def paradigm_next(paradigm_id: str, conn: Db, username: UserName):
         paradigm_id = _check_id(paradigm_id)
         user = user_row(conn, username)
         ctx = paradigm_context(conn, user["id"], paradigm_id)
-        record_attempt(conn, user["id"], ctx["drill"]["id"], "listen", True, None)
-        machine = ctx["machine"]
-        if machine.state in ("recite", "scored"):
-            machine = machine.preview_again()
-            apply_paradigm_machine(conn, user["id"], paradigm_id, ctx["drill"], machine)
-            ctx = paradigm_context(conn, user["id"], paradigm_id)
-        ctx["feedback"] = {
-            "kind": "ok",
-            "text": "Oído. Recita sin mirar para sumar una rep.",
-        }
-        return paradigm_fragment(request, ctx)
-
-    @app.post("/paradigms/{paradigm_id}/recite", response_class=HTMLResponse)
-    def paradigm_recite(request: Request, paradigm_id: str, conn: Db, username: UserName):
-        paradigm_id = _check_id(paradigm_id)
-        user = user_row(conn, username)
-        ctx = paradigm_context(conn, user["id"], paradigm_id)
-        try:
-            nxt = ctx["machine"].begin_recite()
-        except IllegalTransition as exc:
-            ctx["feedback"] = {"kind": "bad", "text": str(exc)}
-            return paradigm_fragment(request, ctx)
-        apply_paradigm_machine(conn, user["id"], paradigm_id, ctx["drill"], nxt)
-        ctx = paradigm_context(conn, user["id"], paradigm_id)
-        return paradigm_fragment(request, ctx)
-
-    @app.post("/paradigms/{paradigm_id}/preview", response_class=HTMLResponse)
-    def paradigm_preview(request: Request, paradigm_id: str, conn: Db, username: UserName):
-        paradigm_id = _check_id(paradigm_id)
-        user = user_row(conn, username)
-        ctx = paradigm_context(conn, user["id"], paradigm_id)
-        nxt = ctx["machine"].preview_again()
-        apply_paradigm_machine(conn, user["id"], paradigm_id, ctx["drill"], nxt)
-        ctx = paradigm_context(conn, user["id"], paradigm_id)
-        return paradigm_fragment(request, ctx)
-
-    @app.post("/paradigms/{paradigm_id}/score", response_class=HTMLResponse)
-    def paradigm_score(
-        request: Request,
-        paradigm_id: str,
-        conn: Db,
-        username: UserName,
-        slot_1s: Annotated[str, Form()] = "",
-        slot_2s: Annotated[str, Form()] = "",
-        slot_3s: Annotated[str, Form()] = "",
-        slot_1p: Annotated[str, Form()] = "",
-        slot_2p: Annotated[str, Form()] = "",
-        slot_3p: Annotated[str, Form()] = "",
-        mode: Annotated[str, Form()] = "say",
-    ):
-        paradigm_id = _check_id(paradigm_id)
-        user = user_row(conn, username)
-        answers = {
-            "1s": slot_1s,
-            "2s": slot_2s,
-            "3s": slot_3s,
-            "1p": slot_1p,
-            "2p": slot_2p,
-            "3p": slot_3p,
-        }
-        try:
-            result = score_paradigm_recite(conn, user["id"], paradigm_id, answers, mode)
-        except (IllegalTransition, ValueError) as exc:
-            ctx = paradigm_context(conn, user["id"], paradigm_id)
-            ctx["feedback"] = {"kind": "bad", "text": str(exc)}
-            return paradigm_fragment(request, ctx)
-        ctx = paradigm_context(conn, user["id"], paradigm_id)
-        if result["passed"]:
-            if mode == "say":
-                text = "Rep anotada. Recita otra vez hasta la meta."
-                if ctx["machine"].state == "mastered":
-                    text = "Dominado. Sigue recitando si quieres."
-            else:
-                text = "La escritura coincide. No suma reps al marcador."
-            ctx["feedback"] = {"kind": "ok", "text": text, "per_slot": result["per_slot"]}
-        else:
-            ctx["feedback"] = {
-                "kind": "bad",
-                "text": "No coincide. Las tildes cuentan; los signos no.",
-                "per_slot": result["per_slot"],
-            }
-        ctx["answers"] = answers
-        return paradigm_fragment(request, ctx)
+        ack_paradigm_repeat(conn, user["id"], paradigm_id)
+        nxt = ctx["next_item"]
+        return RedirectResponse(f"/paradigms/{nxt['id']}", status_code=303)
 
     @app.get("/scriptorium/{page_id}", response_class=HTMLResponse)
     def scriptorium_page(request: Request, page_id: str, conn: Db, username: UserName):

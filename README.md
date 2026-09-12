@@ -1,22 +1,18 @@
 # rdspan
 
-Mobile-first Spanish practice using the Ranieri–Dowling method: memorize verb tables by reciting them aloud toward a scorecard target, then transcribe phrases (scriptorium). Progress is reps and completed pages — not streaks of opening the app.
+Mobile-first Spanish practice using the Ranieri–Dowling method: memorize verb tables by reciting them aloud toward a scorecard target. Progress is reps — not streaks of opening the app.
 
-v0 is **verb tables + phrase transcription**. Forms are loaded only from curated JSON. The app never asks an LLM (or any generator) for a conjugation.
+v0 is **verb tables only**. Forms are loaded from curated JSON. The app never asks an LLM (or any generator) for a conjugation.
 
 ## Method (what the app enforces)
 
 **Paradigms (`verb_table`)**
 
-`idle → preview (see + hear the table) → recite (say without looking) → scored`
+`hear → repeat → next`
 
-A scorecard rep is counted only when the recite step **passes** (exact token match, punctuation/case ignored, accents kept). Repeat recite until `reps >= target` (default **100**) → `mastered`. Listen is acknowledgement only. Write is optional practice and does **not** add reps.
+Open a table, play the audio, say the six forms aloud, tap **Siguiente**. That counts one rep and opens the next table. No typing. Repeat until `reps >= target` (default **100**) → `mastered`.
 
-**Scriptorium (`phrase_transcription`)**
-
-`idle → listen → say → write → done`
-
-A page is complete only when **listen, say, and write** are all true. Listen is ack-only. Say and write must match the phrase tokens.
+Tense names on each table link to `/tiempos`, which explains every tense used in the seed.
 
 ## Run with Podman
 
@@ -27,12 +23,19 @@ podman compose up --build
 
 Then open [http://localhost:8080](http://localhost:8080) and sign in with HTTP Basic (`rdspan` / `changeme` unless you changed them).
 
+If the host already has something on 8080 (`bind: address already in use`), set `RDSPAN_PORT` in `.env` (or the environment) to a free port:
+
+```sh
+RDSPAN_PORT=5783 podman compose up --build
+```
+
+Then open `http://localhost:5783`. `PORT` is inside the container (leave it at 8080); `RDSPAN_PORT` is the port on your Mac.
+
 Named volumes:
 
 - `rdspan_data` — SQLite file (`DATABASE_PATH=/data/rdspan.db`)
-- `rdspan_audio` — Piper voice + pre-generated WAV/OGG
 
-The container seeds paradigms on boot, then pre-generates audio with **Piper** (`es_ES-davefx-medium`, slightly slow `PIPER_LENGTH_SCALE=1.35`). First boot downloads the voice into `rdspan_audio` and synthesizes every cell and phrase. Later boots skip files that already exist. TTS is **never** called during a drill.
+Pre-generated full-table OGG files ship in `data/audio/` (copied into the image). TTS is **not** run on boot. `generate-audio` is only for missing full tracks after you add paradigms.
 
 ### Seed / regenerate without rebuilding
 
@@ -40,36 +43,36 @@ The container seeds paradigms on boot, then pre-generates audio with **Piper** (
 # Load curated JSON into SQLite (idempotent)
 podman compose exec rdspan python -m rdspan seed
 
-# Rebuild WAV/OGG from the current database (only missing files)
+# Synthesize any missing full-table OGG (downloads the Piper voice if needed)
 podman compose exec rdspan python -m rdspan generate-audio
-
-# Force regenerate everything
-podman compose exec rdspan python -m rdspan generate-audio --force
 ```
 
 ## Local (no container)
 
-Needs Python 3.11+ and [uv](https://docs.astral.sh/uv/). Piper needs `espeak-ng` on the host (the container image already installs it).
+Needs Python 3.11+ and [uv](https://docs.astral.sh/uv/). Piper needs `espeak-ng` on the host only if you regenerate audio.
 
 ```sh
 uv sync
 export BASIC_AUTH_USER=rdspan BASIC_AUTH_PASS=changeme
-export DATABASE_PATH=./var/rdspan.db AUDIO_PATH=./var/audio
+export DATABASE_PATH=./var/rdspan.db
 uv run python -m rdspan seed
-uv run python -m rdspan generate-audio   # downloads the Spanish voice on first run
 uv run python -m rdspan serve            # http://127.0.0.1:8080
 ```
 
-Useful env vars: `BASIC_AUTH_USER`, `BASIC_AUTH_PASS`, `DATABASE_PATH`, `AUDIO_PATH`, `SCORECARD_TARGET`, `PIPER_VOICE`, `PIPER_LENGTH_SCALE`, `HOST`, `PORT`.
+Audio defaults to `./data/audio` (the committed OGG files). Override with `AUDIO_PATH` if needed.
+
+Useful env vars: `BASIC_AUTH_USER`, `BASIC_AUTH_PASS`, `DATABASE_PATH`, `AUDIO_PATH`, `SCORECARD_TARGET`, `PIPER_VOICE`, `PIPER_LENGTH_SCALE`, `FULL_AUDIO_PAUSE_MS`, `HOST`, `PORT`.
 
 ## Data rules
 
 Curated files:
 
-- `data/paradigms.json` — regular *-ar / -er / -ir* presente + pretérito, plus irregulars **ser, estar, ir, haber, tener, hacer, decir, poder, querer, venir**. Every paradigm has `source`, `license`, `verified_at`.
-- `data/phrases.json` — original scriptorium sentences, same provenance fields.
+- `data/paradigms.json` — finite tables from Butt, Benjamin and Moreira Rodríguez, *A New Reference Grammar of Modern Spanish*, 6th ed., chapter 16. Regular models **hablar, comer, vivir**, then every usable headword in the 16.12 irregular list (compounds and radical-changing verbs included; obsolete parenthetical defectives omitted). Each lemma has presente, imperfecto, pretérito, futuro, and condicional (indicative) plus presente and imperfecto *-ra* (subjunctive). Compound tenses, the future subjunctive, and *-se* imperfect subjunctive are omitted (predictable or obsolete). Every paradigm has `source`, `license`, `verified_at`.
+- `data/lemma_en.json` — English glosses for every lemma (shown on the home list and each table). Tense names are translated in the UI (`present indicative`, and so on).
+- `data/phrases.json` — empty. Scriptorium is not seeded.
+- `data/audio/` — Piper OGG full-table tracks (pause between forms). Per-form clips, WAV intermediates, and voice models are not kept.
 
-`python -m rdspan seed` copies those files into SQLite. It does not inflect verbs.
+Regenerate the JSON from the authoring tables with `uv run python scripts/build_paradigms.py`. `python -m rdspan seed` copies JSON into SQLite. It does not inflect verbs.
 
 Schema lives in `migrations/` and is applied on startup.
 

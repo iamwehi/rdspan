@@ -13,7 +13,7 @@ ENV UV_COMPILE_BYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PATH="/app/.venv/bin:$PATH" \
     DATABASE_PATH=/data/rdspan.db \
-    AUDIO_PATH=/audio \
+    AUDIO_PATH=/app/data/audio \
     HOST=0.0.0.0 \
     PORT=8080 \
     PIPER_VOICE=es_ES-davefx-medium \
@@ -29,8 +29,8 @@ COPY templates ./templates
 COPY static ./static
 COPY docker/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh \
-    && mkdir -p /data /audio
+    && mkdir -p /data
 
-EXPOSE 8080
-VOLUME ["/data", "/audio"]
+EXPOSE 8081
+VOLUME ["/data"]
 ENTRYPOINT ["/entrypoint.sh"]

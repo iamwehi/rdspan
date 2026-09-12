@@ -2,16 +2,6 @@ from __future__ import annotations
 
 from fastapi.testclient import TestClient
 
-HABLAR = {
-    "slot_1s": "hablo",
-    "slot_2s": "hablas",
-    "slot_3s": "habla",
-    "slot_1p": "hablamos",
-    "slot_2p": "habláis",
-    "slot_3p": "hablan",
-}
-
-
 def test_requires_basic_auth(client: TestClient):
     assert client.get("/").status_code == 401
     assert "WWW-Authenticate" in client.get("/").headers
@@ -21,71 +11,71 @@ def test_home_lists_curated_verbs(client: TestClient, auth: tuple[str, str]):
     r = client.get("/", auth=auth)
     assert r.status_code == 200
     assert "hablar" in r.text
-    assert "scriptorium" in r.text.lower()
+    assert "pretérito" in r.text
+    assert "subjuntivo" in r.text
+    assert "Scriptorium" not in r.text
     assert "streak" not in r.text.lower()
     assert "reps de paradigmas" in r.text
+    assert "Escucha, repite, siguiente" in r.text
+    assert "/tiempos" in r.text
 
 
-def test_paradigm_rep_counts_only_after_passing_recite(
+def test_paradigm_loop_is_hear_repeat_next(
     client: TestClient, auth: tuple[str, str]
 ):
     pid = "hablar.presente.indicativo"
-    assert client.get(f"/paradigms/{pid}", auth=auth).status_code == 200
+    page = client.get(f"/paradigms/{pid}", auth=auth)
+    assert page.status_code == 200
+    assert "Escritura opcional" not in page.text
+    assert "slot_1s" not in page.text
+    assert "Recitar sin mirar" not in page.text
+    assert "Escucha. Repite en voz alta. Siguiente." in page.text
+    assert "Siguiente ·" in page.text
+    assert "<th>Audio</th>" not in page.text
+    assert "Oír yo" not in page.text
 
-    wrong = {**HABLAR, "slot_1s": "hago"}
-    client.post(f"/paradigms/{pid}/recite", auth=auth)
-    failed = client.post(f"/paradigms/{pid}/score", data={**wrong, "mode": "say"}, auth=auth)
-    assert failed.status_code == 200
-    assert "0 / 3" in failed.text or "3 reps para" in failed.text
+    nxt = client.post(f"/paradigms/{pid}/next", auth=auth, follow_redirects=False)
+    assert nxt.status_code == 303
+    location = nxt.headers["location"]
+    assert location.startswith("/paradigms/")
+    assert location != f"/paradigms/{pid}"
+    assert "hablar.imperfecto.indicativo" in location
 
-    client.post(f"/paradigms/{pid}/recite", auth=auth)
-    write = client.post(
-        f"/paradigms/{pid}/score", data={**HABLAR, "mode": "write"}, auth=auth
-    )
-    assert "no suma" in write.text.lower()
+    scored = client.get(f"/paradigms/{pid}", auth=auth)
+    assert "1 / 3" in scored.text
+    assert "para la meta" in scored.text
 
-    client.post(f"/paradigms/{pid}/recite", auth=auth)
-    passed = client.post(
-        f"/paradigms/{pid}/score", data={**HABLAR, "mode": "say"}, auth=auth
-    )
-    assert passed.status_code == 200
-    assert "1 / 3" in passed.text
-    assert "para la meta" in passed.text
+    missing = client.post(f"/paradigms/{pid}/score", auth=auth)
+    assert missing.status_code == 404
 
 
-def test_scriptorium_requires_listen_say_write(
+def test_tenses_page_explains_each_used_tense(
     client: TestClient, auth: tuple[str, str]
 ):
-    page = "p01"
-    home = client.get("/", auth=auth).text
-    assert "oír" in home
-
-    r = client.get(f"/scriptorium/{page}", auth=auth)
+    r = client.get("/tiempos", auth=auth)
     assert r.status_code == 200
-    assert "Yo soy estudiante." in r.text
+    body = r.text.lower()
+    for needle in (
+        "presente de indicativo",
+        "imperfecto de indicativo",
+        "pretérito de indicativo",
+        "futuro de indicativo",
+        "condicional",
+        "presente de subjuntivo",
+        "imperfecto de subjuntivo",
+    ):
+        assert needle in body
+    assert 'id="preterito-indicativo"' in r.text
 
-    say_early = client.post(
-        f"/scriptorium/{page}/say", data={"response": "Yo soy estudiante."}, auth=auth
-    )
-    assert "después de oírla" in say_early.text
 
-    client.post(f"/scriptorium/{page}/listen", auth=auth)
-    missed = client.post(
-        f"/scriptorium/{page}/say", data={"response": "soy profesor"}, auth=auth
-    )
-    assert "No coincide" in missed.text
-
-    said = client.post(
-        f"/scriptorium/{page}/say", data={"response": "yo soy estudiante"}, auth=auth
-    )
-    assert "de memoria" in said.text
-    assert 'value="yo soy estudiante"' not in said.text
-    done = client.post(
-        f"/scriptorium/{page}/write", data={"response": "Yo soy estudiante."}, auth=auth
-    )
-    assert "Página completa" in done.text
-    home = client.get("/", auth=auth).text
-    assert home.count('class="on"') >= 3
+def test_scriptorium_is_absent_without_phrases(
+    client: TestClient, auth: tuple[str, str]
+):
+    home = client.get("/", auth=auth)
+    assert home.status_code == 200
+    assert "/scriptorium/" not in home.text
+    missing = client.get("/scriptorium/p01", auth=auth)
+    assert missing.status_code == 404
 
 
 def test_session_cookie_covers_htmx_posts(client: TestClient, auth: tuple[str, str]):

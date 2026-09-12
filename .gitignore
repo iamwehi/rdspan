@@ -7,7 +7,7 @@ __pycache__/
 .coverage
 htmlcov/
 build/
-dist/
+    10|dist/
 wheels/
 
 # Virtual environments
@@ -17,12 +17,19 @@ wheels/
 var/
 *.db
 *.db-wal
-*.db-shm
+    20|*.db-shm
 .env
 
-# TTS models and generated audio (named volume in compose)
-data/audio/
+# Piper models (generate-audio downloads these)
+data/audio/voices/
 voices/
+*.onnx
+*.onnx.json
+
+# WAV intermediates and per-form clips; only full.ogg is kept
+data/audio/**/*.wav
+data/audio/cells/*/[123][sp].ogg
+data/audio/.silence-*
 
 # OS / editor
 .DS_Store

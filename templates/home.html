@@ -2,25 +2,32 @@
 {% block title %}rdspan{% endblock %}
 {% block content %}
 <section class="hero">
-  <h1>Memoriza paradigmas. Transcribe frases.</h1>
+  <h1>Memoriza paradigmas verbales.</h1>
   <p class="lede">
-    El progreso son repeticiones en voz alta y páginas de scriptorium terminadas,
-    no el hábito de abrir la app.
+    El progreso son repeticiones en voz alta hacia una meta, no el hábito de abrir la app.
+    El bucle es oír → repetir → siguiente.
   </p>
   <ul class="stats">
     <li><strong>{{ summary.reps }}</strong> {% if summary.reps == 1 %}rep{% else %}reps{% endif %} de paradigmas</li>
     <li><strong>{{ summary.mastered }}/{{ summary.paradigms }}</strong> tablas dominadas</li>
+    {% if summary.pages %}
     <li><strong>{{ summary.pages_done }}/{{ summary.pages }}</strong> páginas hechas</li>
+    {% endif %}
   </ul>
 </section>
 
 <section>
   <h2>Tablas verbales</h2>
-  <p class="hint">Escucha, recita sin mirar, anota la rep. Meta: {{ target }}.</p>
+  <p class="hint">Escucha, repite, siguiente. Meta: {{ target }}. <a href="/tiempos">Qué es cada tiempo</a>.</p>
   {% for group in grouped %}
   <article class="group">
     <header class="group-h">
-      <h3>{{ group.lemma }}</h3>
+      <div class="group-title">
+        <h3>{{ group.lemma }}</h3>
+        {% if lemma_en(group.lemma) %}
+        <p class="gloss" lang="en">{{ lemma_en(group.lemma) }}</p>
+        {% endif %}
+      </div>
       <span class="pill">{{ group.regularity }}</span>
     </header>
     <ul class="cards">
@@ -28,6 +35,9 @@
       <li>
         <a class="card" href="/paradigms/{{ p.id }}">
           <span class="card-kicker">{{ p.tense }} {{ p.mood }}</span>
+          {% if tense_en(p.tense, p.mood) %}
+          <span class="card-en" lang="en">{{ tense_en(p.tense, p.mood) }}</span>
+          {% endif %}
           <span class="card-title">{{ p.lemma }}</span>
           {% if p.mastered_at %}
           <span class="badge">dominado</span>
@@ -44,6 +54,7 @@
   {% endfor %}
 </section>
 
+{% if phrases %}
 <section>
   <h2>Scriptorium</h2>
   <p class="hint">Escuchar → decir → escribir. La página cuenta solo con los tres.</p>
@@ -63,4 +74,5 @@
     {% endfor %}
   </ul>
 </section>
+{% endif %}
 {% endblock %}

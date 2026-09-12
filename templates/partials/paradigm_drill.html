@@ -1,8 +1,15 @@
-<section id="drill" class="drill" hx-target="#drill" hx-swap="outerHTML">
-  <p class="crumb"><a href="/">Inicio</a> · paradigma</p>
+<section id="drill" class="drill">
+  <p class="crumb"><a href="/">Inicio</a> · <a href="/tiempos">tiempos</a> · paradigma</p>
   <header class="drill-h">
     <h1>{{ paradigm.lemma }}</h1>
-    <p class="sub">{{ paradigm.tense }} · {{ paradigm.mood }}
+    {% if lemma_en(paradigm.lemma) %}
+    <p class="gloss" lang="en">{{ lemma_en(paradigm.lemma) }}</p>
+    {% endif %}
+    <p class="sub">
+      <a href="/tiempos#{{ tense_anchor(paradigm.tense, paradigm.mood) }}">{{ paradigm.tense }} · {{ paradigm.mood }}</a>
+      {% if tense_en(paradigm.tense, paradigm.mood) %}
+      <span lang="en">({{ tense_en(paradigm.tense, paradigm.mood) }})</span>
+      {% endif %}
       {% if paradigm.ending %}· -{{ paradigm.ending }}{% endif %}
       · {{ paradigm.regularity }}
     </p>
@@ -16,33 +23,25 @@
     {% endif %}
   </header>
 
-  {% if feedback %}
-  <p class="flash {{ feedback.kind }}" role="status">{{ feedback.text }}</p>
-  {% endif %}
+  <p class="prompt">Escucha. Repite en voz alta. Siguiente.</p>
 
-  {% if machine.state != "recite" %}
   <div class="table-wrap">
-    <table class="para">
-      <caption>Tabla {{ paradigm.lemma }}</caption>
-      <thead>
-        <tr><th>Persona</th><th>Forma</th><th>Audio</th></tr>
-      </thead>
-      <tbody>
-        {% for c in cells %}
-        <tr class="{% if feedback and feedback.per_slot is defined %}{% if feedback.per_slot[c.slot] %}ok{% else %}bad{% endif %}{% endif %}">
-          <th>{{ c.pronoun }}</th>
-          <td lang="es">{{ c.form }}</td>
-          <td>
-            {% if audio[c.slot] %}
-            <audio controls preload="none" playsinline src="{{ audio[c.slot] }}"></audio>
-            {% else %}
-            <span class="muted">sin audio</span>
-            {% endif %}
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+    <div class="para-box">
+      <table class="para">
+        <caption>Tabla {{ paradigm.lemma }}</caption>
+        <thead>
+          <tr><th>Persona</th><th>Forma</th></tr>
+        </thead>
+        <tbody>
+          {% for c in cells %}
+          <tr>
+            <th>{{ c.pronoun }}</th>
+            <td lang="es">{{ c.form }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
     {% if full_audio %}
     <p class="playall">
       Tabla completa
@@ -51,47 +50,9 @@
     {% endif %}
   </div>
 
-  <div class="actions">
-    <form method="post" action="/paradigms/{{ paradigm.id }}/listen" hx-post="/paradigms/{{ paradigm.id }}/listen">
-      <button type="submit" class="btn">Ya escuché</button>
-    </form>
-    <form method="post" action="/paradigms/{{ paradigm.id }}/recite" hx-post="/paradigms/{{ paradigm.id }}/recite">
-      <button type="submit" class="btn primary">Recitar sin mirar</button>
-    </form>
-  </div>
-
-  <details class="optional">
-    <summary>Escritura opcional (no suma reps)</summary>
-    <form class="grid-form" method="post" action="/paradigms/{{ paradigm.id }}/score" hx-post="/paradigms/{{ paradigm.id }}/score" hx-disabled-elt="find button">
-      <input type="hidden" name="mode" value="write">
-      {% for c in cells %}
-      <label>
-        {{ c.pronoun }}
-        <input name="slot_{{ c.slot }}" value="{{ answers.get(c.slot, '') }}" autocomplete="off" autocapitalize="off" spellcheck="false" lang="es">
-      </label>
-      {% endfor %}
-      <button type="submit" class="btn">Comprobar escritura</button>
-    </form>
-  </details>
-
-  {% else %}
-  <p class="prompt">
-    Aparta la vista. Recita las seis formas en voz alta, luego escríbelas para puntuar la rep.
-  </p>
-  <form class="grid-form" method="post" action="/paradigms/{{ paradigm.id }}/score" hx-post="/paradigms/{{ paradigm.id }}/score" hx-disabled-elt="find button">
-    <input type="hidden" name="mode" value="say">
-    {% for c in cells %}
-    <label>
-      {{ c.pronoun }}
-      <input name="slot_{{ c.slot }}" value="{{ answers.get(c.slot, '') }}" autocomplete="off" autocapitalize="off" spellcheck="false" lang="es" {% if loop.first %}autofocus{% endif %}>
-    </label>
-    {% endfor %}
-    <button type="submit" class="btn primary">Puntuar esta rep</button>
+  <form method="post" action="/paradigms/{{ paradigm.id }}/next">
+    <button type="submit" class="btn primary">Siguiente · {{ next_item.lemma }} {{ next_item.tense }}</button>
   </form>
-  <form method="post" action="/paradigms/{{ paradigm.id }}/listen" hx-post="/paradigms/{{ paradigm.id }}/listen">
-    <button type="submit" class="btn ghost">Volver a escuchar</button>
-  </form>
-  {% endif %}
 
   <p class="source muted">Fuente: {{ paradigm.source }} · {{ paradigm.license }} · {{ paradigm.verified_at }}</p>
 </section>
